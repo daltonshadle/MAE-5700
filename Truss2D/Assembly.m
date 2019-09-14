@@ -40,23 +40,36 @@ end
 
 % Package variables into the output structs
 globalSystem.K=K;
-return
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Comment out return to enact assignment errors.
+%return
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Here is another version of the same code. You can take advantage of the
 % gatherMat array which has already been defined to simplify some of the
 % loops. Fill in the missing code to assemble ke into K2 which should be
 % identical to K. 
 
-K2=zeros(numNodes*numDOF);
-for e=1:numEls % for each element
-    ke = TrussElem(e,meshStruct); % make the local stiffness matrix
-    for lclROW = 1 : (nnpe*numDOF)
+K2 = zeros(numNodes*numDOF);
+for e = 1:numEls % for each element
+    ke = TrussElem(e, meshStruct); % make the local stiffness matrix
+    for lclROW = 1:(nnpe*numDOF)
         glbROW = error('Global Row number?'); % global row index
-        for lclCOL = 1 : (nnpe*numDOF)
+        % need to find the lclROW number in terms of the glbROW number from
+        % the assembly matrix, or in this case gatherMat
+        
+        for lclCOL = 1:(nnpe*numDOF)
             glbCOL = error('Global Column number?'); % global column index
+            % need to find the lclCOL number in terms of the glbCOL number 
+            % from the assembly matrix, or in this case gatherMat
+            
             % Assemble local stiffness matrix into the global
             % stiffness matrix here
             K2(glbROW,glbCOL) = error('What is the stiffness matrix value?');
+            % need to assign K2 at the global node numbers to ke at the 
+            % local node numbers
         end
     end
 

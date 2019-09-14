@@ -37,29 +37,29 @@
 home; clear; close all;  % clean the workspace
 
 % Preprocessing
-meshStruct=TrussMesh; % create the geometry and mesh
-[globalSystem,boundStruct,meshStruct]=...
+meshStruct = TrussMesh; % create the geometry and mesh
+[globalSystem, boundStruct, meshStruct] = ...
     InputData(meshStruct); % read element properties, applied loads 
                            % and prescribed displacements
 
 % Calculation and assembly of global stiffness matrix
-globalSystem=...
-    Assembly(globalSystem,meshStruct);  % creates local stiffness matrices 
-                                        % and uses connectivity array to
-                                        % create global stiffness matrix. 
+globalSystem = ...
+    Assembly(globalSystem, meshStruct);  % creates local stiffness matrices 
+                                         % and uses connectivity array to
+                                         % create global stiffness matrix. 
 
 % Solution Phase
-globalSystem=...
-    Soln(globalSystem,meshStruct,boundStruct); % applies essential BCs and 
-                                               % solves the global system 
-                                               % for nodal displacements 
-                                               % and reaction forces
+globalSystem = ...
+    Soln(globalSystem, meshStruct, boundStruct); % applies essential BCs and 
+                                                 % solves the global system 
+                                                 % for nodal displacements 
+                                                 % and reaction forces
 
 % Postprocessor Phase 
-globalSystem=...
-    PostProcess(globalSystem,meshStruct,boundStruct); % calculate stresses, 
-                                                      % show deformed 
-                                                      % shape, etc.
+globalSystem = ...
+    PostProcess(globalSystem, meshStruct, boundStruct); % calculate stresses, 
+                                                        % show deformed 
+                                                        % shape, etc.
                                                       
                                                       
                                                       
