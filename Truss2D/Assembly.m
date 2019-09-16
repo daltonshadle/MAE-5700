@@ -56,18 +56,18 @@ K2 = zeros(numNodes*numDOF);
 for e = 1:numEls % for each element
     ke = TrussElem(e, meshStruct); % make the local stiffness matrix
     for lclROW = 1:(nnpe*numDOF)
-        glbROW = error('Global Row number?'); % global row index
+        glbROW = gatherMat(e, lclROW); % global row index
         % need to find the lclROW number in terms of the glbROW number from
         % the assembly matrix, or in this case gatherMat
         
         for lclCOL = 1:(nnpe*numDOF)
-            glbCOL = error('Global Column number?'); % global column index
+            glbCOL = gatherMat(e, lclCOL); % global column index
             % need to find the lclCOL number in terms of the glbCOL number 
             % from the assembly matrix, or in this case gatherMat
             
             % Assemble local stiffness matrix into the global
             % stiffness matrix here
-            K2(glbROW,glbCOL) = error('What is the stiffness matrix value?');
+            K2(glbROW,glbCOL) = K2(glbROW,glbCOL) + ke(lclROW, lclCOL);
             % need to assign K2 at the global node numbers to ke at the 
             % local node numbers
         end
@@ -75,7 +75,7 @@ for e = 1:numEls % for each element
 
 end
 
-
+disp(K-K2);
 % Compare results from different methods.
 display(['The maximum difference between K and K2 is ', num2str(max(max(abs(K-K2))))]);
 

@@ -16,18 +16,17 @@ nnpe=2;   % number of nodes per element. define this variable since it will
 % Define the coordinates of the nodes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-nCoords=[-1 1; % first column is x coordinates of each node
-         0 1; % second column is y coordinates of each node
-         1 1;
-         0 0];
+nCoords=[  0   0; % first column is x coordinates of each node
+         0.5   0; % second column is y coordinates of each node
+         0.5 0.5];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Define the connectivity array (dimensions are numEls X nnpe)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elCon=[4 1;  % elCon(i,j) is the global node number of the 
-       4 2;  % jth node of the ith element
-       4 3];
+elCon=[1 3;  % elCon(i,j) is the global node number of the 
+       2 3;  % jth node of the ith element
+       1 2];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 numNodes=size(nCoords,1); % number of nodal points in the mesh. 

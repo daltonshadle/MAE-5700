@@ -34,7 +34,7 @@
 % last edit: 5 September 2017 H. Ritz
 
 % Preliminary steps
-home; clear; close all;  % clean the workspace
+home; clear; close all; clc;  % clean the workspace
 
 % Preprocessing
 meshStruct = TrussMesh; % create the geometry and mesh

@@ -17,10 +17,10 @@ numNodes = meshStruct.numNodes;
 % may be the same or different for each element in the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elArea 	= 10^(-2)*[1;2;1];            % Elements area, column vector where 
-                                      % each componenet is the area of that 
+elArea 	= 1*10^(-4)*ones(numEls,1);     % Elements area, column vector where 
+                                      % each component is the area of that 
                                       % element 
-elYM    = 1e7*ones(numEls,1);   	  % Young's Modulus, column vector where 
+elYM    = 200*10^(9)*ones(numEls,1);    % Young's Modulus, column vector where 
                                       % each componenet is the YM of that 
                                       % element 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,12 +30,12 @@ elYM    = 1e7*ones(numEls,1);   	  % Young's Modulus, column vector where
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
 myf=1000;
-appForces=[4 1 myf];  % for example, appForces=[3 2 20e3]; means that 
+appForces=[3 1 myf];  % for example, appForces=[3 2 20e3]; means that 
                       % global node number 3 has an applied load 
                       % in the y direction with magnitude 20e3
-                      % better example [globalNodeNum, direction, force]
-                      % where direction (x=1, y=2, z=3) and force unit 
-                      % = Newtons
+% better example [globalNodeNum, direction, force]
+% where direction (x=1, y=2, z=3) and force unit 
+% = Newtons
          
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -45,10 +45,10 @@ appForces=[4 1 myf];  % for example, appForces=[3 2 20e3]; means that
 % DEFINE THIS FOR EACH PROBLEM
 essBCs = [1 1 0;   % for example, essBCs=[3 2 0;] means that 
           1 2 0;   % global node number 3 has a required displacement  
-          2 2 0;   % of 0 in the y direction
-          2 1 0;   % better example [globalNodeNum, direction, displacement]
-          3 2 0];  % where direction (x=1, y=2, z=3) and displacement unit 
-                   % = meters
+          2 2 0;]; % of 0 in the y direction         
+% better example [globalNodeNum, direction, displacement]
+% where direction (x=1, y=2, z=3) and displacement unit 
+% = meters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
