@@ -43,9 +43,9 @@ switch numDim % post process differently, depending on spatial dimensions
         
         L=sqrt((x2-x1).^2 + (y2-y1).^2 + (z2-z1).^2); % L = length of the element
         
-        a = (x2-x1) / L; % direction cosine of projection on x-axis
-        b = (y2-y1) / L; % direction cosine of projection on y-axis
-        c = (z2-z1) / L; % direction cosine of projection on z-axis
+        a = (x2-x1) ./ L; % direction cosine of projection on x-axis
+        b = (y2-y1) ./ L; % direction cosine of projection on y-axis
+        c = (z2-z1) ./ L; % direction cosine of projection on z-axis
         
         operator = [-a, -b, -c, a, b, c];
 end
@@ -53,6 +53,7 @@ end
 % Calculating all strains
 disp(size(operator));
 disp(size(d(gatherMat)));
+disp(size(L));
 strain=sum(operator.*d(gatherMat),2)./L;   % element strain
 strain_therm = elThermCoef.*elDeltaTemp.*ones(numEls,1);
 strain_mech = strain - strain_therm;

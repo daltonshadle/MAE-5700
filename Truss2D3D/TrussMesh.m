@@ -18,11 +18,14 @@ nnpe=2;   % number of nodes per element. define this variable since it will
 % DEFINE THIS FOR EACH PROBLEM
 % If you give an x and y coordinate, this is a 2D problem. If you give 3
 % coordinates for each node, this is a 3D problem.
-nCoords=[2 0 0; % first column is x coordinates of each node
-         0 0 1; % second column is y coordinates of each node
-         0 0 3; % third column (if present) is z coordinates of each node
-         0 2 1];
-nCoords = [0 0;1 0;2 0];
+
+% first column is x coordinates of each node
+% second column is y coordinates of each node
+% third column (if present) is z coordinates of each node
+nCoords = [2 0 0;
+           0 0 1;
+           0 0 3;
+           0 2 1;];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 numNodes=size(nCoords,1); % number of nodal points in the mesh. 
@@ -34,10 +37,12 @@ numDOF=numDim; % number of degrees of freedom per node.
 % Define the connectivity array (dimensions are numEls X nnpe)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elCon=[1 2;  % elCon(i,j) is the global node number of the 
-       1 3;  % jth node of the ith element
-       1 4];
-elCon = [1 2; 2 3];
+
+% elCon(i,j) is the global node number of the 
+% jth node of the ith element
+elCon = [1 2;
+         1 3;
+         1 4;];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 numEls=size(elCon,1); % number of elements in the mesh.

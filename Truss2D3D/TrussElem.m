@@ -24,7 +24,7 @@ x2=nCoords(gn2,1); y2=nCoords(gn2,2); % each node in the current element
 switch numDim % the local stiffness matrix has a different form
               % depending on the number of spatial dimensions
     case 2 % 2D problems        
-        L=sqrt((x2-x1).^2+(y2-y1).^2); % L = length of the element
+        L=sqrt((x2-x1)^2+(y2-y1)^2); % L = length of the element
         c=(x2-x1)/L; % cosine of the angle of the element with the X axis
         c2 = c^2;
         s=(y2-y1)/L; % cosine of the angle of the element with the Y axis
@@ -40,7 +40,7 @@ switch numDim % the local stiffness matrix has a different form
         fe_therm = const_therm * [-c; -s; c; s]; % contribution of force vector from thermal effects
     case 3 % 3D problems
         z1=nCoords(gn1,3); z2=nCoords(gn2,3); % extract z-coord for both nodes
-        L=sqrt((x2-x1).^2 + (y2-y1).^2 + (z2-z1).^2); % L = length of the element
+        L=sqrt((x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2); % L = length of the element
         
         a = (x2-x1) / L; % direction cosine of projection on x-axis
         b = (y2-y1) / L; % direction cosine of projection on y-axis

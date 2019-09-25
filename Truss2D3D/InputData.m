@@ -18,30 +18,38 @@ numNodes=meshStruct.numNodes;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
 elArea 	= 1e-4*ones(numEls,1);   	 % Elements area  
-elYM    = 2e11*ones(numEls,1);   	 % Young's Modulus 
-elThermCoef = 1.5e-5*ones(numEls,1); % Thermal Coefficient of Expansion
-elDeltaTemp = -20*ones(numEls,1);    % Delta Temperature
+elYM    = 1e11*ones(numEls,1);   	 % Young's Modulus 
+elThermCoef = 0*ones(numEls,1); % Thermal Coefficient of Expansion
+elDeltaTemp = 0*ones(numEls,1);    % Delta Temperature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Applied forces. Each row is the global node number, the DOF, and
 % the value for any applied loads
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-myf=1000;
-appForces=[1 3 -myf]; % for example, appForces=[3 2 20e3]; means that 
-%            4 2 myf];  % global node number 3 has an applied load 
-%                       % in the y direction with magnitude 20e3
-appForces= [];            
+% for example, appForces=[3 2 20e3]; means that 
+% global node number 3 has an applied load 
+% in the y direction with magnitude 20e3
+myforce =1000;
+appForces= [1, 3, -myforce];            
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Prescribed displacement boundary conditions. Each row is the global node
 % number, the DOF, and the value for any essential BCs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-essBCs=[1 1 0 ;   % for example, essBCs=[3 2 0;] means that 
-        1 2 0 ;   % global node number 3 has a required displacement  
-        2 2 0
-        3 2 0];  % of 0 in the y direction
+% for example, essBCs=[3 2 0;] means that 
+% global node number 3 has a required displacement  
+% of 0 in the y direction
+essBCs =[2 1 0;
+         2 2 0;
+         2 3 0;
+         3 1 0;
+         3 2 0;
+         3 3 0;
+         4 1 0;
+         4 2 0;
+         4 3 0;];  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
@@ -60,18 +68,18 @@ for frc=1:size(appForces,1)
 end
 
 % Package variables into the output structs
-globalSystem.K=K;
-globalSystem.F=F;
-globalSystem.d=d;
+globalSystem.K =K;
+globalSystem.F =F;
+globalSystem.d =d;
 
-boundStruct.essBCs   =essBCs;
-boundStruct.appForces=appForces;
+boundStruct.essBCs    =essBCs;
+boundStruct.appForces =appForces;
 
-meshStruct.numEq =numEq;
-meshStruct.elArea=elArea;
-meshStruct.elYM  =elYM;
-meshStruct.elThermCoef = elThermCoef;
-meshStruct.elDeltaTemp = elDeltaTemp;
+meshStruct.numEq       =numEq;
+meshStruct.elArea      =elArea;
+meshStruct.elYM        =elYM;
+meshStruct.elThermCoef =elThermCoef;
+meshStruct.elDeltaTemp =elDeltaTemp;
 
 
  
