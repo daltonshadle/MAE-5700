@@ -22,6 +22,7 @@ nCoords=[2 0 0; % first column is x coordinates of each node
          0 0 1; % second column is y coordinates of each node
          0 0 3; % third column (if present) is z coordinates of each node
          0 2 1];
+nCoords = [0 0;1 0;2 0];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 numNodes=size(nCoords,1); % number of nodal points in the mesh. 
@@ -36,6 +37,7 @@ numDOF=numDim; % number of degrees of freedom per node.
 elCon=[1 2;  % elCon(i,j) is the global node number of the 
        1 3;  % jth node of the ith element
        1 4];
+elCon = [1 2; 2 3];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 numEls=size(elCon,1); % number of elements in the mesh.

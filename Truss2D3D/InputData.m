@@ -17,8 +17,10 @@ numNodes=meshStruct.numNodes;
 % may be the same or different for each element in the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elArea 	= 1e-4*ones(numEls,1);   	% Elements area  
-elYM    = 2e11*ones(numEls,1);   	% Young's Modulus 
+elArea 	= 1e-4*ones(numEls,1);   	 % Elements area  
+elYM    = 2e11*ones(numEls,1);   	 % Young's Modulus 
+elThermCoef = 1.5e-5*ones(numEls,1); % Thermal Coefficient of Expansion
+elDeltaTemp = -20*ones(numEls,1);    % Delta Temperature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Applied forces. Each row is the global node number, the DOF, and
@@ -29,22 +31,17 @@ myf=1000;
 appForces=[1 3 -myf]; % for example, appForces=[3 2 20e3]; means that 
 %            4 2 myf];  % global node number 3 has an applied load 
 %                       % in the y direction with magnitude 20e3
-         
+appForces= [];            
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Prescribed displacement boundary conditions. Each row is the global node
 % number, the DOF, and the value for any essential BCs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-essBCs=[2 1 0 ;   % for example, essBCs=[3 2 0;] means that 
-        2 2 0 ;   % global node number 3 has a required displacement  
-        2 3 0 ;   % of 0 in the y direction
-        3 1 0;
-        3 2 0;
-        3 3 0;
-        4 1 0;
-        4 2 0;
-        4 3 0];
+essBCs=[1 1 0 ;   % for example, essBCs=[3 2 0;] means that 
+        1 2 0 ;   % global node number 3 has a required displacement  
+        2 2 0
+        3 2 0];  % of 0 in the y direction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
@@ -73,6 +70,8 @@ boundStruct.appForces=appForces;
 meshStruct.numEq =numEq;
 meshStruct.elArea=elArea;
 meshStruct.elYM  =elYM;
+meshStruct.elThermCoef = elThermCoef;
+meshStruct.elDeltaTemp = elDeltaTemp;
 
 
  

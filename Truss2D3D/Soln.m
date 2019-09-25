@@ -7,6 +7,7 @@ function globalSystem = Soln(globalSystem,meshStruct,boundStruct)
 % unpack necessary input
 K=globalSystem.K;
 F=globalSystem.F;
+f_total_therm = globalSystem.f_total_therm;
 d=globalSystem.d;
 essBCs=boundStruct.essBCs;
 numDOF=meshStruct.numDOF;
@@ -29,17 +30,18 @@ K_E	= K(essDOF,essDOF);       % Extract K_E matrix
 K_F	= K(indF,indF);           % Extract K_F matrix 
 K_EF    = K(essDOF,indF);     % Extract K_EF matrix
 f_F  	= F(indF);            % Extract f_F vector
+f_Th    = f_total_therm(indF); % Extract force from thermal effects
 d_E  	= essBCs(:,3);        % Extract d_E vector
  
 % solve for d_F
-d_F	=K_F\( f_F - K_EF'* d_E);
+d_F	=K_F\( f_F + f_Th - K_EF'* d_E);
  
 % reconstruct the global solution d
 d(essDOF)=d_E;                
 d(indF)=d_F;
 
 % compute the reaction forces on the DOF with essential BCs
-reactionVec = K_E*d_E+K_EF*d_F-F(essDOF);
+reactionVec = K_E*d_E+K_EF*d_F-F(essDOF) - f_total_therm(essDOF);
 
 % Package variables into the output structs
 globalSystem.d=d;
