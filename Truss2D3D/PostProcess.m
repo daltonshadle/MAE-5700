@@ -13,8 +13,8 @@ gatherMat =meshStruct.gatherMat;
 nCoords   =meshStruct.nCoords;
 elYM      =meshStruct.elYM;
 elArea    =meshStruct.elArea;
-elThermCoef =meshStruct.elThermCoef ;
-elDeltaTemp = meshStruct.elDeltaTemp;
+elThermCoef =meshStruct.elThermCoef;
+elDeltaTemp =meshStruct.elDeltaTemp;
 
 d         =globalSystem.d';
 
@@ -51,9 +51,6 @@ switch numDim % post process differently, depending on spatial dimensions
 end
 
 % Calculating all strains
-disp(size(operator));
-disp(size(d(gatherMat)));
-disp(size(L));
 strain=sum(operator.*d(gatherMat),2)./L;   % element strain
 strain_therm = elThermCoef.*elDeltaTemp.*ones(numEls,1);
 strain_mech = strain - strain_therm;

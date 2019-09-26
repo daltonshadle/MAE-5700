@@ -14,9 +14,15 @@ gatherMat =meshStruct.gatherMat;
 nCoords   =meshStruct.nCoords;
 d         =globalSystem.d;
 reactionVec= globalSystem.reactionVec; 
-strain    =globalSystem.strain;      
-stress    =globalSystem.stress;     
+strain    =globalSystem.strain;
+strain_mech =globalSystem.strain_mech;
+strain_therm =globalSystem.strain_therm; 
+stress    =globalSystem.stress;
+stress_mech =globalSystem.stress_mech;
+stress_therm =globalSystem.stress_therm;
 force     =globalSystem.force;  
+force_mech =globalSystem.force_mech;
+force_therm =globalSystem.force_therm;
 appForces =boundStruct.appForces;
 essBCs    =boundStruct.essBCs;
 
@@ -80,6 +86,7 @@ end
 axis equal
 % label the plot
 title('Truss Plot');
+view(45, 45);
 legend('Initial',['Deformed (',num2str(magFac),'X)'])
 % Print problem input and results
 FID=1; % FID=1 prints to the screen. 
@@ -124,12 +131,13 @@ rxndir(essBCs(:,2)==3)='z';
 % print the reaction forces
 fprintf(FID,'\n\n\tReaction Forces \n\t---------------\n');
 fprintf(FID,'node #\tdir. of rxn\tvalue of rxn\n');
-for i=1:size(essBCs,1)
+for i=1:size(essBCs,1) 
     fprintf(FID,'%d\t%s\t\t%e\n',essBCs(i,1),rxndir(i),reactionVec(i));
 end
 
 % print the strains, stresses, and internal forces for each element
+format shortEng;
 fprintf(FID,'\n\n\tElement Results \n\t---------------\n');
-fprintf(FID,'el #\tstress\t\tstrain\t\tinternal force\n');
-fprintf(FID,'%d\t%e\t%e\t%e\n',[1:numEls;stress';strain';force']);
+fprintf(FID,'el #\tstress\t\tstrain\t\tint force\t\ttherm stress\ttherm strain \ttherm force \tmech stress \tmech strain \tmech force\n');
+fprintf(FID,'%d \t\t%.2e \t%.2e \t%.2e \t\t%.2e \t\t%.2e \t\t%.2e \t\t%.2e \t\t%.2e \t\t%.2e \n',[1:numEls;stress';strain';force';stress_therm';strain_therm';force_therm';stress_mech';strain_mech';force_mech';]);
 

@@ -17,10 +17,10 @@ numNodes=meshStruct.numNodes;
 % may be the same or different for each element in the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elArea 	= 1e-4*ones(numEls,1);   	 % Elements area  
+elArea 	= 1e-4*ones(numEls,1); % Elements area  
 elYM    = 1e11*ones(numEls,1);   	 % Young's Modulus 
-elThermCoef = 0*ones(numEls,1); % Thermal Coefficient of Expansion
-elDeltaTemp = 0*ones(numEls,1);    % Delta Temperature
+elThermCoef = 0e-5*ones(numEls,1);      % Thermal Coefficient of Expansion
+elDeltaTemp = 0*ones(numEls,1);      % Delta Temperature
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Applied forces. Each row is the global node number, the DOF, and
@@ -31,7 +31,7 @@ elDeltaTemp = 0*ones(numEls,1);    % Delta Temperature
 % global node number 3 has an applied load 
 % in the y direction with magnitude 20e3
 myforce =1000;
-appForces= [1, 3, -myforce];            
+appForces= [1, 3, -myforce];         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Prescribed displacement boundary conditions. Each row is the global node
@@ -49,7 +49,34 @@ essBCs =[2 1 0;
          3 3 0;
          4 1 0;
          4 2 0;
-         4 3 0;];  
+         4 3 0;];
+% Variable for question 4 part c half truss
+essBCs =[1 1 0;
+         1 2 0;
+         2 1 0;
+         3 1 0]; 
+% Variable for question 4 part c full truss
+essBCs = [1, 1, 0;
+          1, 2, 0;
+          5, 2, 0;];
+% Variable for question 4 part b
+essBCs = [1, 1, 0;
+          1, 2, 0;
+          1, 3, 0;
+          2, 2, 0;
+          2, 3, 0;
+          3, 2, 0;
+          3, 3, 0];
+% Question 3 part b
+essBCs =[2 1 0;
+         2 2 0;
+         2 3 0;
+         3 1 0;
+         3 2 0;
+         3 3 0;
+         4 1 0;
+         4 2 0;
+         4 3 0;];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations

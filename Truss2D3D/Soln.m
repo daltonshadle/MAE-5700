@@ -30,7 +30,7 @@ K_E	= K(essDOF,essDOF);       % Extract K_E matrix
 K_F	= K(indF,indF);           % Extract K_F matrix 
 K_EF    = K(essDOF,indF);     % Extract K_EF matrix
 f_F  	= F(indF);            % Extract f_F vector
-f_Th    = f_total_therm(indF); % Extract force from thermal effects
+f_Th    = f_total_therm(indF);% Extract force from thermal effects
 d_E  	= essBCs(:,3);        % Extract d_E vector
  
 % solve for d_F
