@@ -79,5 +79,30 @@ disp(K-K2);
 % Compare results from different methods.
 display(['The maximum difference between K and K2 is ', num2str(max(max(abs(K-K2))))]);
 
+% *********************** Multipoint Constraint Code **********************
+% Pull all variables from globalSystem struct
+c = globalSystem.c;
+multiConstraint = globalSystem.multiConstraint;
+
+% Initialize numMPC to the number of multipoint constraint
+numMPC = size(multiConstraint, 1);
+
+% iterate over each multipoint constraint and construct c matrix
+for i = 1:numMPC
+    % intialize two MPC variables, node number and incline angle
+    nodeNumMPC = multiConstraint(i, 1);
+    angleMPC = multiConstraint(i, 2);
+    
+    % create tempC matrix holding the local node MPC values
+    tempC = [sin(angleMPC), -cos(angleMPC)];
+    
+    % add to correct location in global c
+    globMPCmap = [nnpe * (nodeNumMPC-1) + 1, nnpe * (nodeNumMPC-1) + 2];
+    c(i, globMPCmap) = c(i, globMPCmap) + tempC;
+end
+
+% Reassign c to globalSystem struct to pass back through
+globalSystem.c = c;
+
 
 

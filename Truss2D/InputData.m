@@ -32,15 +32,15 @@ elYM    = 200*10^(9)*ones(numEls,1);  % Young's Modulus, column vector where
 % better example [globalNodeNum, direction, force]
 % where direction (x=1, y=2, z=3) and force unit 
 % = Newtons
-myForce=-1000;
-appForces=[3 1 myForce];  % for example, appForces=[3 2 20e3]; means that 
-                          % global node number 3 has an applied load 
-                          % in the y direction with magnitude 20e3
+% for example, appForces=[3 2 20e3]; means that 
+% global node number 3 has an applied load 
+% in the y direction with magnitude 20e3
+myForce=1000;
+appForces=[2 1 myForce]; 
 
-% Variable for question 6                
-appForces=[2, 2, myForce;
-           3, 2, 2*myForce;
-           4, 2, myForce];
+% For HW4
+appForces=[3 2 -myForce]; 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Prescribed displacement boundary conditions. Each row is the global node
@@ -50,22 +50,36 @@ appForces=[2, 2, myForce;
 % better example [globalNodeNum, direction, displacement]
 % where direction (x=1, y=2, z=3) and displacement unit 
 % = meters
-essBCs = [1 1 0;   % for example, essBCs=[3 2 0;] means that 
-          1 2 0;   % global node number 3 has a required displacement  
-          2 2 0;]; % of 0 in the y direction         
+% for example, essBCs=[3 2 0;] means that 
+% global node number 3 has a required displacement  
+% of 0 in the y direction
+essBCs = [1 1 0;
+          1 2 0];
+      
+% For HW4
+essBCs = [1 1 0;
+          1 2 0];
 
-% Variable for question 6
-essBCs = [1, 1, 0;
-          1, 2, 0;
-          5, 1, 0;
-          5, 2, 0;];
+% variables for defining multipoint constraints
+% epsilon (float) - penalty parameter for mp constraints
+% multiConstraint (m x 2) - definition of multipoitn constraints where the
+%     usage is on constraint per row as follows [node_#, theta_angle(radians)]
+%     where node_# is the number of the node and theta_angle is the angle
+%     of the sloped mp constraint in radians
+epsilon = 1e15;
+multiConstraint = [4, deg2rad(60)];
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
 numEq = numNodes * numDOF;
-F = zeros(numEq,1);
-d = zeros(numEq,1);
+F = zeros(numEq, 1);
+d = zeros(numEq, 1);
 K = zeros(numEq);
+% initialize multipoint constraint variable and matrices
+numMultiConstraint = size(multiConstraint, 1);
+q = zeros(numMultiConstraint, 1);
+c = zeros(numMultiConstraint, numEq);
 
 % Map the applied loads to the proper location in the global force vector
 for frc = 1:size(appForces,1)
@@ -80,6 +94,12 @@ end
 globalSystem.K = K;
 globalSystem.F = F;
 globalSystem.d = d;
+
+% Add multipoint constraint variables to globalSystem struct
+globalSystem.epsilon = epsilon;
+globalSystem.c = c;
+globalSystem.q = q;
+globalSystem.multiConstraint = multiConstraint;
 
 boundStruct.essBCs    = essBCs;
 boundStruct.appForces = appForces;

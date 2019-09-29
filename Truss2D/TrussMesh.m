@@ -16,47 +16,31 @@ nnpe=2;   % number of nodes per element. define this variable since it will
 % Define the coordinates of the nodes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-nCoords=[  0   0; % first column is x coordinates of each node
-         0.5   0; % second column is y coordinates of each node
-         0.5 0.5];
-% Variable for question 6
-nCoords=[  0,   0;
-         0.5,   0;
-           1,   0;
-         1.5,   0;
-           2,   0;
-           0, 0.5;
-         0.5, 0.5;
-           1, 0.5;
-         1.5, 0.5;
-           2, 0.5];
+% first column is x coordinates of each node
+% second column is y coordinates of each node
+nCoords=[ 0,  0;
+          1,  0];
+
+% For HW 4
+nCoords=[  0,     0;
+         0.5,     0;
+        0.25, -sqrt(0.1875);
+        0.75, -sqrt(0.1875)];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Define the connectivity array (dimensions are numEls X nnpe)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-elCon=[1 3;  % elCon(i,j) is the global node number of the 
-       2 3;  % jth node of the ith element
-       1 2];
+% elCon(i,j) is the global node number of the 
+% jth node of the ith element
+elCon=[1, 2];
 
-% Variable for question 6
-elCon=[1, 6;
-       1, 7;
-       2, 7;
-       2, 8;
-       3, 8;
-       4, 8;
-       4, 9;
-       5, 9;
-       5, 10;
-       1, 2;
+% For HW4
+elCon=[1, 2;
+       1, 3;
        2, 3;
-       3, 4;
-       4, 5;
-       6, 7;
-       7, 8;
-       8, 9;
-       9, 10];
+       2, 4;
+       3, 4;];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 numNodes=size(nCoords,1); % number of nodal points in the mesh. 
