@@ -13,6 +13,18 @@ essBCs=boundStruct.essBCs;
 numDOF=meshStruct.numDOF;
 numEq =meshStruct.numEq;
 
+% unpack multipoint constraint variables
+c = globalSystem.c;
+q = globalSystem.q;
+epsilon = globalSystem.epsilon;
+
+% assign variables and operations for multipoint constraints
+% epsilonCTC is the matrix define by epsilon * C^T * C for calculations
+epsilonCTC = epsilon .* c' * c;
+
+% Add epsilonCTC to necessary parts of the equation
+K = K + epsilonCTC;
+
 % partition the matrix K, vectors f and d
 % first we want to find the global DOFs with essential boundary conditions
 numEBC=size(essBCs,1); % number of essential boundary conditions
@@ -40,7 +52,10 @@ d(essDOF)=d_E;
 d(indF)=d_F;
 
 % compute the reaction forces on the DOF with essential BCs
-reactionVec = K_E*d_E+K_EF*d_F-F(essDOF);
+forceMPC = epsilonCTC * d;
+disp(d);
+disp(forceMPC);
+reactionVec = K_E*d_E + K_EF*d_F - F(essDOF) - forceMPC(essDOF);
 
 % Package variables into the output structs
 globalSystem.d=d;
