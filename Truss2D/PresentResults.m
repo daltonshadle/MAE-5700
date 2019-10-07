@@ -104,3 +104,4 @@ fprintf(FID,'\n\n\tElement Results \n\t---------------\n');
 fprintf(FID,'el #\tstress\t\tstrain\t\tinternal force\n');
 fprintf(FID,'%d\t%e\t%e\t%e\n',[1:numEls;stress';strain';force']);
 
+reactionVec

@@ -35,11 +35,11 @@ elYM    = 200*10^(9)*ones(numEls,1);  % Young's Modulus, column vector where
 % for example, appForces=[3 2 20e3]; means that 
 % global node number 3 has an applied load 
 % in the y direction with magnitude 20e3
-myForce=1000;
-appForces=[2 1 myForce]; 
+myForce=1000; 
 
 % For HW4
 appForces=[3 2 -myForce]; 
+%appForces=[2 2 myForce]; 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -52,10 +52,7 @@ appForces=[3 2 -myForce];
 % = meters
 % for example, essBCs=[3 2 0;] means that 
 % global node number 3 has a required displacement  
-% of 0 in the y direction
-essBCs = [1 1 0;
-          1 2 0];
-      
+% of 0 in the y direction      
 % For HW4
 essBCs = [1 1 0;
           1 2 0];
@@ -66,8 +63,8 @@ essBCs = [1 1 0;
 %     usage is on constraint per row as follows [node_#, theta_angle(radians)]
 %     where node_# is the number of the node and theta_angle is the angle
 %     of the sloped mp constraint in radians
-epsilon = 1e15;
-multiConstraint = [4, deg2rad(60)];
+epsilon = 1e10;
+multiConstraint = [4, deg2rad(30)];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

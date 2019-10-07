@@ -86,7 +86,6 @@ end
 axis equal
 % label the plot
 title('Truss Plot');
-view(45, 45);
 legend('Initial',['Deformed (',num2str(magFac),'X)'])
 % Print problem input and results
 FID=1; % FID=1 prints to the screen. 

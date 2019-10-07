@@ -9,8 +9,8 @@ numEls    =meshStruct.numEls;
 numDim    =meshStruct.numDim;
 elCon     =meshStruct.elCon;
 nCoords   =meshStruct.nCoords;
-%stress    =globalSystem.stress;
-stress    =globalSystem.stress_mech;
+stress    =globalSystem.stress;
+%stress    =globalSystem.stress_mech;
 
 fighand=figure; % start a figure window and set some default properties
 set(fighand,'defaultLineLineWidth',3)
@@ -82,5 +82,4 @@ switch numDim
 end
 % label the plot
 title('Stress Sense');
-view(45, 45);
 axis equal

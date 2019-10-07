@@ -22,37 +22,14 @@ nnpe=2;   % number of nodes per element. define this variable since it will
 % first column is x coordinates of each node
 % second column is y coordinates of each node
 % third column (if present) is z coordinates of each node
-nCoords = [2 0 0;
-           0 0 1;
-           0 0 3;
-           0 2 1];
+
 % Variable for question 4 part c half truss
 nCoords = [0, 0;
-           1, 0.5;
+           0.5, 0;
            1, 0;
-           0, 0.5;
-           0.5, 0.5;
-           0.5, 0];
-% Variable for question 4 part c full truss
-nCoords=[  0,   0;
-         0.5,   0;
-           1,   0;
-         1.5,   0;
-           2,   0;
-           0, 0.5;
-         0.5, 0.5;
-           1, 0.5;
-         1.5, 0.5;
-           2, 0.5];
-% Variable for question 4 part b
-nCoords=[ 0, 0, 0;
-          1, 0, 0;
-          1, 1, 0];
-% Question 3 part b
-nCoords = [2 0 0;
-           0 0 1;
-           0 0 3;
-           0 2 1];
+           0, 1;
+           0.5, 1;
+           1, 1];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 numNodes=size(nCoords,1); % number of nodal points in the mesh. 
@@ -67,45 +44,17 @@ numDOF=numDim; % number of degrees of freedom per node.
 
 % elCon(i,j) is the global node number of the 
 % jth node of the ith element
-elCon = [1 2;
-         1 3;
-         1 4];
+
 % Variable for question 4 part c half truss
-elCon = [1 4;
-         4 5;
-         5 2;
-         2 3;
-         3 6;
-         6 1;
-         1 5;
-         5 6;
-         6 2];
-% Variable for question 4 part c full truss
-elCon=[1, 6;
-       1, 7;
-       2, 7;
-       2, 8;
-       3, 8;
-       4, 8;
-       4, 9;
-       5, 9;
-       5, 10;
-       1, 2;
-       2, 3;
-       3, 4;
-       4, 5;
-       6, 7;
-       7, 8;
-       8, 9;
-       9, 10];
-% Variable for question 4 part b
-elCon=[1, 2;
-       2, 3;
-       1, 3];
-% Question 3 part b
 elCon = [1 2;
-         1 3;
-         1 4];
+         2 3;
+         1 4;
+         1 5;
+         2 5;
+         2 6;
+         3 6;
+         4 5;
+         5 6];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 numEls=size(elCon,1); % number of elements in the mesh.

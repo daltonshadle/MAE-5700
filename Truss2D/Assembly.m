@@ -75,7 +75,6 @@ for e = 1:numEls % for each element
 
 end
 
-disp(K-K2);
 % Compare results from different methods.
 display(['The maximum difference between K and K2 is ', num2str(max(max(abs(K-K2))))]);
 
@@ -86,6 +85,7 @@ multiConstraint = globalSystem.multiConstraint;
 
 % Initialize numMPC to the number of multipoint constraint
 numMPC = size(multiConstraint, 1);
+globMPC = [];
 
 % iterate over each multipoint constraint and construct c matrix
 for i = 1:numMPC
@@ -98,11 +98,14 @@ for i = 1:numMPC
     
     % add to correct location in global c
     globMPCmap = [nnpe * (nodeNumMPC-1) + 1, nnpe * (nodeNumMPC-1) + 2];
+    globMPC = [globMPC, globMPCmap];
     c(i, globMPCmap) = c(i, globMPCmap) + tempC;
 end
+globMPC = unique(globMPC);
 
 % Reassign c to globalSystem struct to pass back through
 globalSystem.c = c;
+globalSystem.globMPC = globMPC;
 
 
 
