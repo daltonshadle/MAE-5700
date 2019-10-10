@@ -44,6 +44,8 @@ d_F	=K_F\( f_F - K_EF'* d_E);
 d(essDOF)=d_E;                
 d(indF)=d_F;
 
+disp(d);
+
 % compute the reactions on the DOF with essential BCs
 reactionVec = K_E*d_E+K_EF*d_F-F(essDOF);
 

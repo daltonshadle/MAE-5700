@@ -72,22 +72,26 @@ set(0,'defaultAxesFontWeight','bold')
 [x_plot,S_ex,M_ex,w_ex]=Exact;
 figure
 plot(displacement(:,1),displacement(:,2),'-r'); hold on;
-plot(x_plot,w_ex,'-k'); legend('FE','Exact Solution'); hold on;
+plot(x_plot,w_ex,'-.k'); 
+legend('FE','Exact Solution'); hold on;
 ylabel('displacement');  xlabel('x'); title(['Displacements (',num2str(numEls),' elements)']);
 
 % break
 figure
 plot(moment(:,1),moment(:,2),'-r'); hold on;
-plot(x_plot,M_ex,'-k'); legend('FE','Exact Solution'); hold on;
+plot(x_plot,M_ex,'-.k'); 
+legend('FE','Exact Solution'); hold on;
 ylabel('moment'); xlabel('x'); title(['Moments (',num2str(numEls),' elements)']);
 
 figure
 plot(shear(:,1),shear(:,2),'-r'); hold on;
-plot(x_plot,S_ex,'-k'); legend('FE','Exact Solution'); hold on;
+plot(x_plot,S_ex,'-.k'); 
+legend('FE','Exact Solution'); hold on;
 ylabel('shear'); xlabel('x');   title(['Shear (',num2str(numEls),' elements)']);
 
 % Package variables into the output struct
 globalSystem.displacement=displacement;
 globalSystem.moment      =moment;
 globalSystem.shear       =shear;
+
 

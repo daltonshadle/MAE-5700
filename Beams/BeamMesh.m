@@ -20,11 +20,15 @@ numDim=1; % number of spatial dimensions
 % Define the points of interest on the beam. This should include the left
 % end and the right end as well as the locations of any applied loads or
 % BCs and the beginning and end of any distributed loads.
-pointsOfInterest=[0 4 8 12];
+HW5_Q3_POI = [0 1];
+HW5_Q4_POI = [0 2 4 6 8];
+pointsOfInterest = HW5_Q4_POI;
 % For each span (i.e. the lengths between consecutive points of interest)
 % define how many elements you want the span to have. 
 % spanEls(i)=number of elements between POI #i and POI #i+1
-spanEls=[1 1 1];
+HW5_Q3_Span = [200];
+HW5_Q4_Span = [10 10 10 10];
+spanEls = HW5_Q4_Span;
 % Also define an alternative maximum element length. The code will either
 % use this value or the number of elements per span, whichever creates more
 % elements.

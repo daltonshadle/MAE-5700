@@ -19,9 +19,14 @@ numNodes=meshStruct.numNodes;
 % may be the same or different for each span in the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-spanEI 	= 1e4*ones(numSpans,1);   	% beam cross-section property 
-spanDistributedLoad = [-1 -1 0]';   % magnitude of constant distributed 
-                                    % transverse load on each span
+spanEI 	= 2e7*ones(numSpans,1);   	% beam cross-section property 
+distLoad = 2000;
+HW5_Q3_DL = distLoad*ones(numSpans,1)';
+HW5_Q4_DL = [-distLoad, -distLoad, -distLoad, -distLoad]';
+
+spanDistributedLoad = HW5_Q4_DL;   
+% magnitude of constant distributed 
+% transverse load on each span
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % spread the span properties to the elements
@@ -34,8 +39,15 @@ elDistLoad=spanDistributedLoad(spanNum);
 % right), the DOF, and the value for any essential BCs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-essBCs=[1 1 0; 
-        1 2 0]; 
+% [Point of Interest #, Type (1=u_yi, 2=theta_i), Displacement/Slope]
+HW5_Q3_BC = [1 1 0;
+             1 2 0;
+             2 1 0;];
+HW5_Q4_BC = [1 1 0;
+             3 1 0;
+             5 1 0;];
+
+essBCs = HW5_Q4_BC; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Applied forces and moments. Each row is the number of the point of
@@ -43,11 +55,21 @@ essBCs=[1 1 0;
 % applied loads.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-appForces=[2 1 -10; % for example, appForces=[3 2 20;4 1 -10;] means that 
-           4 1 -20; % at the third point of interest there is an 
-           4 2 20;  % applied moment with magnitude 20 in the CCW direction
-           3 1 5];  % and at the fourth POI there is an applied transverse 
-                    % load downward with magnitude 10.
+% [Point of Interest #, Applied (force=1, moment=2), Magnitude (CCW=+, CW=-)]
+% for example, appForces=[3 2 20;4 1 -10;] means that 
+% at the third point of interest there is an 
+% applied moment with magnitude 20 in the CCW direction
+% and at the fourth POI there is an applied transverse 
+% load downward with magnitude 10.
+myForce = 10000;
+myMoment = 5000;
+
+HW5_Q3_F = [];
+HW5_Q4_F = [2 1 -myForce;
+            4 2 myMoment;];
+
+appForces = HW5_Q4_F;
+           
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
