@@ -42,8 +42,11 @@ elDistLoad=spanDistributedLoad(spanNum);
 % value for any essential BCs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-essBCs=[1 1 0 ;   % for example, essBCs=[3 2 0;] means that 
-        1 2 0 ;   % POI number 3 has a required y displacement of 0
+% for example, essBCs=[3 2 0;] means that 
+% POI number 3 has a required y displacement of 0
+% Or in simpler terms [POI,DOF(1=x-displace, 2=y-displace, 3=slope),value]
+essBCs=[1 1 0 ;   
+        1 2 0 ;   
         3 2 0];   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -52,11 +55,13 @@ essBCs=[1 1 0 ;   % for example, essBCs=[3 2 0;] means that
 % interest, the DOF, and the value for any applied loads.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-appForces=[]; % for example, appForces=[3 3 20;4 1 -10;] means that 
-%            4 1 -20; % at the third point of interest there is an 
-%            4 2 20;  % applied moment with magnitude 20 in the CCW direction
-%            3 1 5];  % and at the fourth POI there is an applied -x direction 
-                    % load with magnitude 10.
+% for example, appForces=[3 3 20;4 1 -10;] means that 
+% at the third point of interest there is an 
+% applied moment with magnitude 20 in the CCW direction
+% and at the fourth POI there is an applied -x direction 
+% load with magnitude 10.
+% Or in simpler terms [POI,DOF(1=x-dir, 2=y-dir, 3=moment),value]
+appForces=[2, 1, 1000]; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
@@ -65,10 +70,13 @@ F=zeros(numEq,1);
 d=zeros(numEq,1);
 K=zeros(numEq);
 
+
+
 % Map the applied loads to the proper location in the global force vector
 for frc=1:size(appForces,1)
     poi=pointsOfInterest(appForces(frc,1),:);  % POI for this applied load
-    error(['Find the global node number corresponding to this POI. Possibly helpful commands include FIND and ISMEMBER.'])
+    [~, index]=ismember(nCoords,poi,'rows');
+    gnn=find(index==1);% global node number for this applied load
     gdof=(gnn-1)*numDOF+appForces(frc,2); % global DOF for the applied load
     val=appForces(frc,3);  % value of the applied load
 

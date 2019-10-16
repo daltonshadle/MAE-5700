@@ -25,7 +25,8 @@ for ebc=1:numEBC
     % essDOF stores the index to the degrees of freedom with 
     % essential boundary conditions
     poi=pointsOfInterest(essBCs(ebc,1),:);  % POI for this BC
-    error('Find the global node number corresponding to this POI. Possibly helpful commands include FIND and ISMEMBER.')
+    [~, index]=ismember(nCoords,poi,'rows');
+    gnn=find(index==1);% global node number for this applied load
     essDOF(ebc)=(gnn-1)*numDOF+essBCs(ebc,2); % global DOF for the BC
 end
 indF=setdiff(1:numEq,essDOF); % this returns the indices to the DOF that 

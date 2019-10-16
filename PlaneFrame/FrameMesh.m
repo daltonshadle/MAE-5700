@@ -19,15 +19,17 @@ numDim=2; % number of spatial dimensions
 % enpoints of all frame members as well as the locations of any applied
 % loads or BCs and the beginning and end of any distributed loads. 
 % First column is x coordinates, second column is y coordinates.
+% or in simple terms POI = [x, y];
 pointsOfInterest=[0 0 ;
                   0.5 sqrt(3)/2; 
                   1 0];
 % Define the spans and how many elements you want each span to have. A span
 % can't have any POI inside it.
+% or in simple terms spanCon = [POI_start, POI_end];
 spanCon=[1 2;    % this is the connectivity array for the spans.
          2 3;    % each row is the first POI and the second POI 
          1 3];   % that bound each span. 
-spanEls=[2 2 2]; % spanEls(S) is the number of elements span S should have
+spanEls=[1 1 1]; % spanEls(S) is the number of elements span S should have
 % Also define an alternative maximum element length. The code will either
 % use this value or the number of elements per span, whichever creates more
 % elements.

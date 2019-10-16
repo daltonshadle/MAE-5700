@@ -40,8 +40,15 @@ if maxd==0
 else
     magFac=0.1*max(max(nCoords))/maxd;
 end
+
+% initialize vectors for solutions
+deflections = [];
+bendingMoment = [];
+shearForce = [];
+axialForce = [];
+
 for elmID = 1:numEls      % loop over elements to postprocess and plot
-    error(sprintf('Calculate axial force and shear force in each element.\nCalculate bending moment at the endpoints of each element.'))
+    %error(sprintf('Calculate axial force and shear force in each element.\nCalculate bending moment at the endpoints of each element.'))
 
     % To find the deformation of each point in the frame we need to find
     % the axial deformation and the transverse deflection separately from
@@ -52,19 +59,84 @@ for elmID = 1:numEls      % loop over elements to postprocess and plot
     % linearly from one endpoint to the other, so use the shape functions
     % from the truss elements discussed previously. Use rotMat' to
     % transform those deflections into global coordinates.
-
+    
+    elmSoln=d(gatherMat(elmID,:)); % extract element nodal displacements
+    EI   = elEI(elmID);            % Young's modulus x I
+    EA   = elEA(elmID);            % Young's modulus x Area
+    
+    % Extract the global node numbers for this element
+    gn1 = elCon(elmID,1);
+    gn2 = elCon(elmID,2);
+    
+    % get nodal coordinates for this element
+    x1=nCoords(gn1,1); y1=nCoords(gn1,2);
+    x2=nCoords(gn2,1); y2=nCoords(gn2,2);
+    
+    % L = initial length of the elements
+    L=sqrt((x2-x1).^2+(y2-y1).^2); 
+    % compute Jacobian for transformation.
+    J  = L / 2;
+    
+    % compute cosines of this element
+    c=(x2-x1)./L; % cosine of the angle of the element with the X axis
+    s=(y2-y1)./L; % cosine of the angle of the element with the Y axis
+    
+    % create rotation matrix to transform from local to global and visa-versa
+    R = [ c, s, 0, 0, 0, 0;
+         -s, c, 0, 0, 0, 0;
+          0, 0, 1, 0, 0, 0;
+          0, 0, 0, c, s, 0;
+          0, 0, 0,-s, c, 0;
+          0, 0, 0, 0, 0, 1;];
+      
+    % Calculate axial forces
+    d_local = R * elmSoln;
+    elmStrain = (d_local(1) - d_local(4))/L;   % element strain
+    elmForce = EA*elmStrain; % internal element force
+    axialForce = [axialForce, elmForce];
+    
+    
+    % x=linspace(xe(1),xe(2),nplot); % equally distributed points in element
+    % xplot = 2/L*(x-xe(1))-1;       % transform to local coordinate
+    
+    % Compute displacements, moments and shear forces
     nplot=10; %number of points along each element for plotting
     allXi=linspace(-1,1,nplot); % find the xi values, evenly spaced
+    displacement    = []; 
+    moment          = [];    
+    shear           = [];
     for ind=1:nplot
         xi=allXi(ind); % for each xi ...
-        error(sprintf(['Calculate the variables xy and deflections.\n',...
-            'xy should have dimensions 2 X nplot.\n',...
-            '\txy(1,ind)=global x cocordinate of this xi location.\n',...
-            '\txy(2,ind)=global y cocordinate of this xi location.\n',...
-            'deflections should have dimensions 2 X nplot.\n',...
-            '\tdeflections(1,ind)=ux in global coordinates of this xi location.\n',...
-            '\tdeflections(2,ind)=uy in global coordinates of this xi location.\n']))
+        
+        % shape functions evaluated at this point
+        N = [1/4*(1-xi)^2*(2+xi), L/8*(1-xi)^2*(1+xi), ...
+            1/4*(1+xi)^2*(2-xi), L/8*(1+xi)^2*(xi-1)];  
+        % 2nd derivative of N
+        B = [3/2*xi, L*(3/4*xi - 1/4), -3/2*xi,L*(3/4*xi + 1/4)]/J^2;
+        % 3rd derivative of N
+        S = [3/2, 3/4*L, -3/2, 3/4*L]/J^3;
+        
+        % The following commands append as a new row the vector consisting
+        % of x location & corresponding displacement/moment/shear force.
+        % This allows easy plotting of the displacements, moments and shear
+        % force as a function of location in the beam.
+        
+        displacement    = [displacement;[x(ind),  N*elmSoln]]; 
+        moment          = [moment; [x(ind), EI*B*elmSoln]];    
+        shear           = [shear;  [x(ind), -EI*S*elmSoln]];
     end
+    
+%         error(sprintf(['Calculate the variables xy and deflections.\n',...
+%             'xy should have dimensions 2 X nplot.\n',...
+%             '\txy(1,ind)=global x cocordinate of this xi location.\n',...
+%             '\txy(2,ind)=global y cocordinate of this xi location.\n',...
+%             'deflections should have dimensions 2 X nplot.\n',...
+%             '\tdeflections(1,ind)=ux in global coordinates of this xi location.\n',...
+%             '\tdeflections(2,ind)=uy in global coordinates of this xi location.\n']))
+
+    
+    
+    
     % plot the undeformed frame
     plot([x1 x2],[y1 y2],'b-');hold on;
     % plot the deformed frame, using the magnifaction factor when  
