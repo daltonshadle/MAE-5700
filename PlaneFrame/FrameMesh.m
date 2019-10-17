@@ -1,4 +1,4 @@
-function meshStruct=FrameMesh;
+function meshStruct=FrameMesh
 % meshStruct=FRAMEMESH 
 % This file defines the geometry for FRAME finite element code. You must
 % define the "points of interest" for your problem and the number of
@@ -19,21 +19,26 @@ numDim=2; % number of spatial dimensions
 % enpoints of all frame members as well as the locations of any applied
 % loads or BCs and the beginning and end of any distributed loads. 
 % First column is x coordinates, second column is y coordinates.
-% or in simple terms POI = [x, y];
-pointsOfInterest=[0 0 ;
-                  0.5 sqrt(3)/2; 
-                  1 0];
+pointsOfInterest=[0 0;
+                  0 3; 
+                  0 6;
+                  4 6;
+                  4 0;
+                  4 3];
 % Define the spans and how many elements you want each span to have. A span
 % can't have any POI inside it.
-% or in simple terms spanCon = [POI_start, POI_end];
 spanCon=[1 2;    % this is the connectivity array for the spans.
-         2 3;    % each row is the first POI and the second POI 
-         1 3];   % that bound each span. 
-spanEls=[1 1 1]; % spanEls(S) is the number of elements span S should have
+         2 3;
+         2 6;
+         3 4;
+         4 6;
+         6 5];    % each row is the first POI and the second POI 
+                 % that bound each span. 
+spanEls=[20 20 20 20 20 20]; % spanEls(S) is the number of elements span S should have
 % Also define an alternative maximum element length. The code will either
 % use this value or the number of elements per span, whichever creates more
 % elements.
-maxLength=1;
+maxLength=4;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % use the points of interest and span element information to find the nodal
@@ -78,8 +83,10 @@ end
 [nCoords,IA,IC]=unique(nCoords,'rows','stable'); % choose the unique nodes 
                                                  % and save the indexes 
                                                  % to the proper rows
-elCon=IC(elCon); % fix the element connectivity array using 
+nCoords
+elCon=IC(elCon);% fix the element connectivity array using 
                  % only the unique nodes
+elCon              
 numNodes=size(nCoords,1); % now save the final number of nodes 
 numEls=size(elCon,1);     % and the final number of elements
 

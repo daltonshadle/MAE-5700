@@ -19,15 +19,45 @@ numNodes=meshStruct.numNodes;
 % may be the same or different for each span in the mesh
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DEFINE THIS FOR EACH PROBLEM
-spanEI 	= 2e7*ones(numSpans,1);   	% beam cross-section property 
+spanEI 	= 2e5*ones(numSpans,1);   	% beam cross-section property 
 distLoad = 2000;
 HW5_Q3_DL = distLoad*ones(numSpans,1)';
 HW5_Q4_DL = [-distLoad, -distLoad, -distLoad, -distLoad]';
+HW6_Q3_DL = [0, 0];
 
-spanDistributedLoad = HW5_Q4_DL;   
+spanDistributedLoad = HW6_Q3_DL;   
 % magnitude of constant distributed 
 % transverse load on each span
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% follows the form [startLoad, endLoad, startPOI, endPOI]
+HW6_Q3_VDL = [0, 5000, 1, 3];
+spanVaryDistLoad = HW6_Q3_VDL;
+elVDL = zeros(size(nCoords));
+
+% iterate over each varying distributed load (VDL)
+for i=1:size(spanVaryDistLoad,1)
+    % get the length of the VDL
+    startPOI = pointsOfInterest(spanVaryDistLoad(i,3));
+    endPOI = pointsOfInterest(spanVaryDistLoad(i,4));
+    vdlLength = endPOI - startPOI;
+    
+    % get the starting load of the vdl (beta in our equation)
+    vdlStart = spanVaryDistLoad(i,1);
+    
+    % get the vdl per unit length (alpha in our equation)
+    vdlPerLength = (spanVaryDistLoad(i,2) - spanVaryDistLoad(i,1)) / vdlLength;
+    
+    % get all coordinates in this vdl
+    vldCoordCond = (nCoords >= startPOI & nCoords <= endPOI);
+    vdlCoords = nCoords(vldCoordCond);
+    
+    % find the vdl conditions
+    tempElemVDL = vdlPerLength * vdlCoords + vdlStart;
+    
+    % assign to total;
+    elVDL(vldCoordCond) = elVDL(vldCoordCond) + tempElemVDL;
+end
 
 % spread the span properties to the elements
 elEI=spanEI(spanNum);
@@ -46,8 +76,11 @@ HW5_Q3_BC = [1 1 0;
 HW5_Q4_BC = [1 1 0;
              3 1 0;
              5 1 0;];
+HW6_Q3_BC = [2 1 0;
+             3 1 0;
+             3 2 0;];
 
-essBCs = HW5_Q4_BC; 
+essBCs = HW6_Q3_BC; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Applied forces and moments. Each row is the number of the point of
@@ -67,8 +100,9 @@ myMoment = 5000;
 HW5_Q3_F = [];
 HW5_Q4_F = [2 1 -myForce;
             4 2 myMoment;];
+HW6_Q3_F = [];
 
-appForces = HW5_Q4_F;
+appForces = HW6_Q3_F;
            
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,5 +133,6 @@ boundStruct.appForces =appForces;
 meshStruct.numEq =numEq;
 meshStruct.elEI  =elEI;
 meshStruct.elDistLoad=elDistLoad;
-
+meshStruct.spanVaryDistLoad =spanVaryDistLoad;
+meshStruct.elVDL = elVDL;
  

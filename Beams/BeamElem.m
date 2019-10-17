@@ -9,7 +9,7 @@ elCon  =meshStruct.elCon;
 nCoords=meshStruct.nCoords;
 elEI   =meshStruct.elEI;
 elDistLoad=meshStruct.elDistLoad;
-
+elVDL =meshStruct.elVDL;
 
 
 gn1 = elCon(elmID,1); % Extract the global node numbers
@@ -28,5 +28,16 @@ ke = EI/L^3*[12,      6*L,     -12,      6*L;
 % assume constant distributed load and make the local force vector
 p = elDistLoad(elmID);
 
-fe = p*L/2*[1; L/6; 1; -L/6]; % Here, we assume constant q in each element
-                              % Adjust if otherwise.  
+fe_const = p*L/2*[1; L/6; 1; -L/6]; % Here, we assume constant q in each element
+                                    % Adjust if otherwise.  
+                                    
+% assume varying distributed load and make the local force vector
+q1 = elVDL(gn1);
+q2 = elVDL(gn2);
+fe_vdl = L/20*[7*q1 + 3*q2; 
+               L*(q1 + (2/3)*q2); 
+               3*q1 + 7*q2; 
+               -L*((2/3)*q1 + q2)];
+
+% create total fe
+fe = fe_const + fe_vdl;

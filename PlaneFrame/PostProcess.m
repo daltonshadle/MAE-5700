@@ -30,9 +30,9 @@ set(fighand,'defaultLineLineWidth',3)
 set(fighand,'defaultTextFontSize',24)
 set(fighand,'defaultAxesFontSize',24)
 set(fighand,'defaultAxesFontWeight','bold')
-% need a magnification factor for deformed shape since 
+% need a magnification factor for deformed shape since
 % deformations are so small. You may need to adjust this for different
-% types of problems. 
+% types of problems.
 tmpd=[reshape(d,3,[])]';
 maxd=max(max(abs(tmpd(:,1:2))));
 if maxd==0
@@ -40,16 +40,13 @@ if maxd==0
 else
     magFac=0.1*max(max(nCoords))/maxd;
 end
-
-% initialize vectors for solutions
-deflections = [];
-bendingMoment = [];
-shearForce = [];
-axialForce = [];
-
+deflection_x = [];
+deflection_y = [];
+axialForce = zeros(numEls,1);
+shearForce = zeros(numEls,1);
+bendingMoment1 = zeros(numEls,1);
+bendingMoment2 = zeros(numEls,1);
 for elmID = 1:numEls      % loop over elements to postprocess and plot
-    %error(sprintf('Calculate axial force and shear force in each element.\nCalculate bending moment at the endpoints of each element.'))
-
     % To find the deformation of each point in the frame we need to find
     % the axial deformation and the transverse deflection separately from
     % each other. The methodology should be to find several points, xi,
@@ -59,108 +56,71 @@ for elmID = 1:numEls      % loop over elements to postprocess and plot
     % linearly from one endpoint to the other, so use the shape functions
     % from the truss elements discussed previously. Use rotMat' to
     % transform those deflections into global coordinates.
-    
     elmSoln=d(gatherMat(elmID,:)); % extract element nodal displacements
     EI   = elEI(elmID);            % Young's modulus x I
-    EA   = elEA(elmID);            % Young's modulus x Area
-    
-    % Extract the global node numbers for this element
-    gn1 = elCon(elmID,1);
-    gn2 = elCon(elmID,2);
-    
-    % get nodal coordinates for this element
-    x1=nCoords(gn1,1); y1=nCoords(gn1,2);
-    x2=nCoords(gn2,1); y2=nCoords(gn2,2);
-    
-    % L = initial length of the elements
-    L=sqrt((x2-x1).^2+(y2-y1).^2); 
-    % compute Jacobian for transformation.
-    J  = L / 2;
-    
-    % compute cosines of this element
-    c=(x2-x1)./L; % cosine of the angle of the element with the X axis
-    s=(y2-y1)./L; % cosine of the angle of the element with the Y axis
-    
-    % create rotation matrix to transform from local to global and visa-versa
-    R = [ c, s, 0, 0, 0, 0;
-         -s, c, 0, 0, 0, 0;
-          0, 0, 1, 0, 0, 0;
-          0, 0, 0, c, s, 0;
-          0, 0, 0,-s, c, 0;
-          0, 0, 0, 0, 0, 1;];
-      
-    % Calculate axial forces
-    d_local = R * elmSoln;
-    elmStrain = (d_local(1) - d_local(4))/L;   % element strain
-    elmForce = EA*elmStrain; % internal element force
-    axialForce = [axialForce, elmForce];
-    
-    
-    % x=linspace(xe(1),xe(2),nplot); % equally distributed points in element
-    % xplot = 2/L*(x-xe(1))-1;       % transform to local coordinate
-    
+    gn1 = elCon(elmID,1); % Extract the global node numbers
+    gn2 = elCon(elmID,2); % for the current element
+    x1=nCoords(gn1,1);
+    y1=nCoords(gn1,2); % extract the nodal coordinates for
+    x2=nCoords(gn2,1);
+    y2=nCoords(gn2,2); % each node in the current element
+    L=sqrt((x2-x1)^2+(y2-y1)^2); % L = length of the element
+    c=(x2-x1)/L; % cosine of the angle of the element with the X axis
+    s=(y2-y1)/L; % cosine of the angle of the element with the Y axis
+    Re = [c s 0 0 0 0;-s c 0 0 0 0;0 0 1 0 0 0;0 0 0 c s 0;0 0 0 -s c 0;0 0 0 0 0 1];
+    J  = L / 2;         % compute Jacobian for transformation.
+    nplot=3; %number of points along each element for plotting
     % Compute displacements, moments and shear forces
-    nplot=10; %number of points along each element for plotting
-    allXi=linspace(-1,1,nplot); % find the xi values, evenly spaced
-    displacement    = []; 
-    moment          = [];    
-    shear           = [];
+    allXi = linspace(-1,1,nplot)
     for ind=1:nplot
         xi=allXi(ind); % for each xi ...
-        
+        xy(1,ind) = (1-xi)/2*x1 + (1+xi)/2*x2;
+        xy(2,ind) = (1-xi)/2*y1 + (1+xi)/2*y2;       
         % shape functions evaluated at this point
-        N = [1/4*(1-xi)^2*(2+xi), L/8*(1-xi)^2*(1+xi), ...
-            1/4*(1+xi)^2*(2-xi), L/8*(1+xi)^2*(xi-1)];  
-        % 2nd derivative of N
-        B = [3/2*xi, L*(3/4*xi - 1/4), -3/2*xi,L*(3/4*xi + 1/4)]/J^2;
-        % 3rd derivative of N
-        S = [3/2, 3/4*L, -3/2, 3/4*L]/J^3;
+        N1 = [(1-xi)/2, 0, 0, (1+xi)/2, 0 , 0];
+        N2 = [0, 1/4*(1-xi)^2*(2+xi), L/8*(1-xi)^2*(1+xi), 0, ...
+            1/4*(1+xi)^2*(2-xi), L/8*(1+xi)^2*(xi-1)];
+        deflections(1,ind) = N1*elmSoln;
+        deflections(2,ind) = N2*elmSoln;
         
-        % The following commands append as a new row the vector consisting
-        % of x location & corresponding displacement/moment/shear force.
-        % This allows easy plotting of the displacements, moments and shear
-        % force as a function of location in the beam.
-        
-        displacement    = [displacement;[x(ind),  N*elmSoln]]; 
-        moment          = [moment; [x(ind), EI*B*elmSoln]];    
-        shear           = [shear;  [x(ind), -EI*S*elmSoln]];
+        %             'xy should have dimensions 2 X nplot.\n',...
+        %             '\txy(1,ind)=global x cocordinate of this xi location.\n',...
+        %             '\txy(2,ind)=global y cocordinate of this xi location.\n',...
+        %             'deflections should have dimensions 2 X nplot.\n',...
+        %             '\tdeflections(1,ind)=ux in global coordinates of this xi location.\n',...
+        %             '\tdeflections(2,ind)=uy in global coordinates of this xi location.\n']))
     end
-    
-%         error(sprintf(['Calculate the variables xy and deflections.\n',...
-%             'xy should have dimensions 2 X nplot.\n',...
-%             '\txy(1,ind)=global x cocordinate of this xi location.\n',...
-%             '\txy(2,ind)=global y cocordinate of this xi location.\n',...
-%             'deflections should have dimensions 2 X nplot.\n',...
-%             '\tdeflections(1,ind)=ux in global coordinates of this xi location.\n',...
-%             '\tdeflections(2,ind)=uy in global coordinates of this xi location.\n']))
-
-    
-    
-    
+    deflection_x    = [deflection_x;deflections(1,:)]; 
+    deflection_y   = [deflection_y;deflections(2,:)]; 
+    axialForce(elmID) = elEA(elmID)/L*[-1 0 0 1 0 0]*Re*elmSoln;
+    shearForce(elmID) = elEI(elmID)/J^3*[0 3/2 3*L/4 0 -3/2 3*L/4]*Re*elmSoln;
+    bendingMoment1(elmID) = elEI(elmID)/J^2*[0 -3/2 -L 0 3/2 L/2]*Re*elmSoln;
+    bendingMoment2(elmID) = elEI(elmID)/J^2*[0 3/2 L/2 0 -3/2 L]*Re*elmSoln;
     % plot the undeformed frame
     plot([x1 x2],[y1 y2],'b-');hold on;
-    % plot the deformed frame, using the magnifaction factor when  
-    % adding the displacements to the original positions. 
-    plot(xy(1,:)+magFac*deflections(1,:),xy(2,:)+magFac*deflections(2,:),'r-');hold on; 
+    xy(1,:)
+    xy(2,:)
+    % plot the deformed frame, using the magnifaction factor when
+    % adding the displacements to the original positions.
+    plot(xy(1,:)+magFac*deflections(1,:),xy(2,:)+magFac*deflections(2,:),'r-');hold on;
 end
 axis equal
 % label the plot
 title('Frame Plot');
 legend('Initial',['Deformed (',num2str(magFac),'X)'])
-
 % Package variables into the output struct
-globalSystem.deflections   =deflections;
-globalSystem.bendingMoment =bendingMoment;
+globalSystem.deflection_x   =deflection_x;
+globalSystem.deflection_y   =deflection_y;
+globalSystem.bendingMoment1 =bendingMoment1;
+globalSystem.bendingMoment2 =bendingMoment2;
 globalSystem.shearForce    =shearForce;
 globalSystem.axialForce    =axialForce;
 
-
-
 % Print problem input and results
-FID=1; % FID=1 prints to the screen. 
-% FID=fopen('FEAoutput.txt','w'); % Use this line if you want to 
-                                  % print to a file using FOPEN
-       
+FID=1; % FID=1 prints to the screen.
+% FID=fopen('FEAoutput.txt','w'); % Use this line if you want to
+% print to a file using FOPEN
+
 
 % print mesh parameters
 fprintf(FID,'\n\tFrame Parameters \n\t----------------\n');
@@ -200,5 +160,8 @@ end
 % print the strains, stresses, and internal forces for each element
 fprintf(FID,'\n\n\tElement Results \n\t---------------\n');
 fprintf(FID,'el #\taxial\t\tshear\t\tmoment 1\tmoment 2\n');
-fprintf(FID,'%d\t%e\t%e\t%e\t%e\n',[1:numEls;axialForce;shearForce;bendingMoment']);
+%fprintf(FID,'%d\t%e\t%e\t%e\t%e\n',[1:numEls;axialForce;shearForce;bendingMoment1;bendingMoment2]);
+for i=1:numEls
+    fprintf(FID,'%d\t%e\t%e\t%e\t%e\n',i,axialForce(i),shearForce(i),bendingMoment1(i),bendingMoment2(i));
+end
 
