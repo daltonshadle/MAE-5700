@@ -25,6 +25,9 @@ pointsOfInterest=[0 0;
                   4 6;
                   4 0;
                   4 3];
+pointsOfInterest=[0, 0;
+                  0.5, sqrt(3)/2;
+                  1 0];
 % Define the spans and how many elements you want each span to have. A span
 % can't have any POI inside it.
 spanCon=[1 2;    % this is the connectivity array for the spans.
@@ -32,13 +35,16 @@ spanCon=[1 2;    % this is the connectivity array for the spans.
          2 6;
          3 4;
          4 6;
-         6 5];    % each row is the first POI and the second POI 
-                 % that bound each span. 
+         6 5];
+spanCon=[1, 2;
+         2, 3;
+         1, 3];
 spanEls=[20 20 20 20 20 20]; % spanEls(S) is the number of elements span S should have
+spanEls=[1, 1, 1];
 % Also define an alternative maximum element length. The code will either
 % use this value or the number of elements per span, whichever creates more
 % elements.
-maxLength=4;
+maxLength=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % use the points of interest and span element information to find the nodal

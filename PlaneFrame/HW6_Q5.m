@@ -145,8 +145,8 @@ for elmID = 1:numEls      % loop over elements to postprocess and plot
     deflection_x    = [deflection_x;deflections(1,:)]; 
     deflection_y   = [deflection_y;deflections(2,:)]; 
     axialForce(elmID) = elEA(elmID)/L*[-1 0 0 1 0 0]*Re*elmSoln;
-    shearForce(elmID) = elEI(elmID)/J^3*[0 3/2 3*L/4 0 -3/2 3*L/4]*Re*elmSoln;
-    bendingMoment1(elmID) = elEI(elmID)/J^2*[0 -3/2 -L 0 3/2 L/2]*Re*elmSoln;
+    shearForce(elmID) = -elEI(elmID)/J^3*[0 3/2 3*L/4 0 -3/2 3*L/4]*Re*elmSoln;
+    bendingMoment1(elmID) = elEI(elmID)/J^2*[0 -3/2 -L 0 3/2 -L/2]*Re*elmSoln;
     bendingMoment2(elmID) = elEI(elmID)/J^2*[0 3/2 L/2 0 -3/2 L]*Re*elmSoln;
 end
 % ...

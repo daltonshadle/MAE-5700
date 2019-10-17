@@ -30,6 +30,7 @@ spanDistributedLoad = [0 0 -2e3 -2e3 0 0]'; % magnitude of constant distributed
                                     % is at x'=0 and span endpoint 2 is at
                                     % x'=+L. positive q points in the
                                     % positive y' direction.
+spanDistributedLoad = [-10e3, 0, 0]';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % spread the span properties to the elements
@@ -44,10 +45,13 @@ elDistLoad=spanDistributedLoad(spanNum);
 % DEFINE THIS FOR EACH PROBLEM
 essBCs=[1 1 0;   % for example, essBCs=[3 2 0;] means that 
         1 2 0;
-        1 3 0; % POI number 3 has a required y displacement of 0
+        1 3 0;
         5 1 0;
         5 2 0;
         5 3 0];   
+essBCs=[1, 1, 0;
+        1, 2, 0;
+        3, 2, 0];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -61,6 +65,7 @@ appForces=[2 1 4000;
                % applied moment with magnitude 20 in the CCW direction
                % and at the fourth POI there is an applied -x direction 
                     % load with magnitude 10.
+appForces=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % initialize global system of equations
