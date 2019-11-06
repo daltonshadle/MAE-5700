@@ -8,7 +8,8 @@ switch nnpe % shape functions depend on the number of nodes per element
     case 2 % linear elements
         B=(1/2)*[-1, 1];
     case 3 % quadratic elements
-        error('Quadratic elements not yet implemented.')
+        B=[xi-(1/2), -2*xi, xi+(1/2)];
     case 4 % cubic elements
-        error('Cubic elements not yet implemented.')
+        B = [(9/16)*(-3*xi^2 + 2*xi + 1/9), (27/16)*(3*xi^2 - 2*xi/3 - 1), ...
+            (27/16)*(-3*xi^2 - 2*xi/3 + 1), (9/16)*(3*xi^2 + 2*xi - 1/9)];
 end

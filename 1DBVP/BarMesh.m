@@ -13,14 +13,14 @@ function meshStruct=BarMesh;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define this for each problem
-nnpe=2;   % number of nodes per element: 
+nnpe=4;   % number of nodes per element: 
           % 2 for linear elements
           % 3 for quadratic elements
           % 4 for cubic elements
 domain=[0 1]; % the x values of the limits of the domain
 % domain=[2 6]; % the x values of the limits of the domain
 numEls=50; % number of elements in the mesh
-numQP=2;    % number of quad points for numerical integration. 
+numQP=3;    % number of quad points for numerical integration. 
             % choose this to be sufficient for whatever integrals 
             % you need to evaluate.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,9 +39,15 @@ switch nnpe % depending on element type ...
                                               % evenly spaced nodes
         elCon=[1:numNodes-1;2:numNodes]'; % element connectivity array
     case 3
-        error('Quadratic elements not yet implemented.')
+        numNodes=2*numEls+1; % for quad elements
+        nCoords=linspace(xMin,xMax,numNodes); % coordinates of the 
+                                              % evenly spaced nodes
+        elCon=[1:2:numNodes-2; 2:2:numNodes-1; 3:2:numNodes]'; % element connectivity array
     case 4
-        error('Cubic elements not yet implemented.')
+        numNodes=3*numEls+1; % for quad elements
+        nCoords=linspace(xMin,xMax,numNodes); % coordinates of the 
+                                              % evenly spaced nodes
+        elCon=[1:3:numNodes-3; 2:3:numNodes-2; 3:3:numNodes-1; 4:3:numNodes]'; % element connectivity array
     otherwise
         error('Invalid element type.')
 end
