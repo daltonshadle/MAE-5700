@@ -13,14 +13,14 @@ function meshStruct=BarMesh;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define this for each problem
-nnpe=4;   % number of nodes per element: 
+nnpe=3;   % number of nodes per element: 
           % 2 for linear elements
           % 3 for quadratic elements
           % 4 for cubic elements
 domain=[0 1]; % the x values of the limits of the domain
 % domain=[2 6]; % the x values of the limits of the domain
 numEls=50; % number of elements in the mesh
-numQP=3;    % number of quad points for numerical integration. 
+numQP=2;    % number of quad points for numerical integration. 
             % choose this to be sufficient for whatever integrals 
             % you need to evaluate.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
