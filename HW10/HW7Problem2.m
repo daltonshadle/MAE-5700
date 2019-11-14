@@ -2,9 +2,6 @@
 % Use this function to explore the value of the Jacobian at different
 % locations in an element based on nodal locations.
 function HW7Problem2
-
-%% Set up
-
 clear 
 close all
 set(0,'defaultLineLineWidth',3)
@@ -16,13 +13,13 @@ set(0,'defaultAxesFontWeight','bold')
 % For the assigned nodal positions, show that the Jacobian can be negative
 % for concave Q4 elements.
 
-%%
 % Input global nodal positions
 XY=[2 1 ; 0 0; 1 0; 2 -1];
 JacCalcFun(XY)
+
 %% Q8 elements
 % See how the Jacobian varies as the midside node moves for a Q8 element.
-%%
+
 % Input global nodal positions
 XY=[0 0; 1 0 ; 1 1 ; 0 1 ; 0.5 0 ; 1 0.5 ; 0.5 1 ; 0 0.5];
 JacCalcFun(XY);
@@ -56,7 +53,7 @@ end
 % Make a grid of $\xi$ and $\eta$ positions to calculate the Jacobian. Use
 % the shape functions to find the physical coordinate of the $(\xi, \eta)$
 % position.
-points=linspace(-1,1,100);
+points=linspace(-1,1,4);
 [XI,ETA]=meshgrid(points,points);
 
 for row=1:size(XI,1)
@@ -65,8 +62,8 @@ for row=1:size(XI,1)
         Jac=JacMat(xi,eta,XY);
         detJ(row,col)=det(Jac);
         N=Nmat(xi,eta,nnpe); % get the shape functions to plot in the physical domain
-        x(row,col)=error('Find the x position for this point using N.') % use the shape functions to find the global 
-        y(row,col)=error('Find the y position for this point using N.') % coordinates of this \xi, \eta
+        x(row,col)= N * XY(:,1); % use the shape functions to find the global 
+        y(row,col)= N * XY(:,2); % coordinates of this \xi, \eta
     end
 end
 
@@ -98,28 +95,35 @@ switch nnpe
     case 4 
         N=1/4*[(1-xi)*(1-eta), (1+xi)*(1-eta), (1+xi)*(1+eta), (1-xi)*(1+eta)];
     case 8
-        N=error('Define the shape function array for Q8 elements.')
+        N=[(-1/4)*(1-xi)*(1-eta)*(1+xi+eta);
+           (-1/4)*(1+xi)*(1-eta)*(1-xi+eta);
+           (-1/4)*(1+xi)*(1+eta)*(1-xi-eta);
+           (-1/4)*(1-xi)*(1+eta)*(1+xi-eta);
+           (1/2)*(1-xi^2)*(1-eta);
+           (1/2)*(1+xi)*(1-eta^2);
+           (1/2)*(1-xi^2)*(1+eta);
+           (1/2)*(1-xi)*(1-eta^2)]';
 end        
 
 %% Shape function gradient array
 function GN=GNmat(xi, eta, nnpe)
 switch nnpe
     case 4
-        GN=error('Define the shape function gradient array for Q4 elements.')
+        GN=(1/4)*[(eta-1), (1-eta), (eta+1), -(eta+1);
+                  (xi-1),  (1-xi),  (xi+1),  -(xi+1)];
     case 8
         GN=[
-            -1/4*(-1+eta)*(+2*xi+eta),-1/4*(-1+xi)*(+xi+2*eta), 
-            +1/4*(-1+eta)*(-2*xi+eta),+1/4*(+1+xi)*(-xi+2*eta), 
-            +1/4*(+1+eta)*(+2*xi+eta),+1/4*(+1+xi)*(+xi+2*eta), 
-            -1/4*(+1+eta)*(-2*xi+eta),-1/4*(-1+xi)*(-xi+2*eta), 
-            xi*(-1+eta),1/2*(1+xi)*(-1+xi),
-            -1/2*(1+eta)*(-1+eta),-eta*(1+xi),
-            -xi*(1+eta),-1/2*(1+xi)*(-1+xi),
-            1/2*(1+eta)*(-1+eta),eta*(-1+xi),
-            ]'
+            -1/4*(-1+eta)*(+2*xi+eta),-1/4*(-1+xi)*(+xi+2*eta); 
+            +1/4*(-1+eta)*(-2*xi+eta),+1/4*(+1+xi)*(-xi+2*eta); 
+            +1/4*(+1+eta)*(+2*xi+eta),+1/4*(+1+xi)*(+xi+2*eta); 
+            -1/4*(+1+eta)*(-2*xi+eta),-1/4*(-1+xi)*(-xi+2*eta); 
+            xi*(-1+eta),1/2*(1+xi)*(-1+xi);
+            -1/2*(1+eta)*(-1+eta),-eta*(1+xi);
+            -xi*(1+eta),-1/2*(1+xi)*(-1+xi);
+            1/2*(1+eta)*(-1+eta),eta*(-1+xi)]';
 end        
 
 %% Jacobian matrix
-function Jac=JacMat(xi, eta, XY);
+function Jac=JacMat(xi, eta, XY)
 GN=GNmat(xi,eta,size(XY,1));
-Jac=error('Calculate the Jacobian matrix at this location.')
+Jac=GN * XY;
