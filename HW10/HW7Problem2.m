@@ -22,6 +22,9 @@ JacCalcFun(XY)
 
 % Input global nodal positions
 XY=[0 0; 1 0 ; 1 1 ; 0 1 ; 0.5 0 ; 1 0.5 ; 0.5 1 ; 0 0.5];
+XY=[0.5 0.5; 1 0 ; 1 1 ; 0 1 ; 0.5 0 ; 1 0.5 ; 0.5 1 ; 0 0.5]; % Part 2
+%XY=[0 0; 1 0 ; 1 1 ; 0 1 ; 0.5 0 ; 0.75 0.5 ; 0.5 0.75 ; 0 0.5]; % Part 3
+%XY=[0 0; 1 0 ; 1 1 ; 0 1 ; 0.5 0 ; 0.7 0.5 ; 0.5 0.7 ; 0 0.5]; % Part 4
 JacCalcFun(XY);
 
 %% Calculation function
@@ -34,7 +37,7 @@ nnpe=size(XY,1);
 figure
 switch nnpe
     case 4
-        plot(XY([1:end,1],1),XY([1:end,1],2),'o-'); axis equal
+        plot(XY([1:end,1],1),XY([1:end,1],2),'o-k'); axis equal
     case 8
         edges=linspace(-1,1,10);
         exi=[edges,ones(size(edges)),-edges,-1*ones(size(edges))];
@@ -44,7 +47,7 @@ switch nnpe
             ex(e)=N*XY(:,1); % use the shape functions to find the global
             ey(e)=N*XY(:,2); % coordinates of this \xi, \eta
         end
-        plot(ex,ey,'o-'); axis equal
+        plot(ex,ey,'o-k'); axis equal
 end
         
 
@@ -53,7 +56,7 @@ end
 % Make a grid of $\xi$ and $\eta$ positions to calculate the Jacobian. Use
 % the shape functions to find the physical coordinate of the $(\xi, \eta)$
 % position.
-points=linspace(-1,1,4);
+points=linspace(-1,1,10);
 [XI,ETA]=meshgrid(points,points);
 
 for row=1:size(XI,1)
@@ -74,15 +77,26 @@ figure
 subplot(1,2,1)
 surf(XI,ETA,detJ,'EdgeColor','none')
 view(2)
-colorbar
+C=colorbar;
+%L=cellfun(@(x)sprintf('%.3f',x),num2cell(get(C,'xtick')),'Un',0);
+%set(C,'xticklabel',L)
 xlabel('\xi')
 ylabel('\eta')
 axis square
 
 subplot(1,2,2)
 surf(x,y,detJ,'EdgeColor','none')
+hold on
+switch nnpe
+    case 4
+        plot(XY([1:end,1],1),XY([1:end,1],2),'o-k'); axis equal
+    case 8
+        plot(ex,ey,'o-k'); axis equal
+end
 view(2)
-colorbar
+C=colorbar;
+%L=cellfun(@(x)sprintf('%.3f',x),num2cell(get(C,'xtick')),'Un',0);
+%set(C,'xticklabel',L)
 xlabel('x')
 ylabel('y')
 axis equal tight
