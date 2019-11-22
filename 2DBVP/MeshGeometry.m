@@ -11,11 +11,11 @@ function [meshStruct,boundStruct,PlotInstructions]=MeshGeometry
 % "1" for mesh directly generated from Matlab "BoxGrid_2D" function
 % "2" for mesh generated from Ansys and loaded from "loadFromGridFile"
 % function
-LoadChoice = 1;
+LoadChoice = 2;
 
-PlotInstructions.plot_mesh     = 'yes';  % What to plot. For big meshes, 
+PlotInstructions.plot_mesh     = 'no';  % What to plot. For big meshes, 
 PlotInstructions.plot_node     = 'no';   % it is better not to plot node and vector.
-PlotInstructions.plot_boundary = 'yes';  % Change this information as appropriate
+PlotInstructions.plot_boundary = 'no';  % Change this information as appropriate
 PlotInstructions.plot_contour  = 'yes';
 PlotInstructions.plot_vector   = 'yes';
 
@@ -25,12 +25,12 @@ nsd = 2;            % number of spatial dimensions
 if LoadChoice==1 % use LoadChoice =1 only when the geometry is rectangular
     % Set this information for each problem
     xl = 0.0;           % left location of the range in the x direction
-    xr = 1.0e-2;           % right location of the range in the x direction
+    xr = 0.5e-2;           % right location of the range in the x direction
     yb = 0.0;           % bottom location of the range in the y direction
-    yt = 1.0e-2;           % top location of the range in the y direction
+    yt = 2e-2;           % top location of the range in the y direction
 
-    nx = 15;            % number of elements in x direction
-    ny = 15;            % number of elements in y direction
+    nx = 80;            % number of elements in x direction
+    ny = 160;            % number of elements in y direction
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

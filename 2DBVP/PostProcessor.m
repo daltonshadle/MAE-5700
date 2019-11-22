@@ -10,18 +10,18 @@ numEls = meshStruct.numEls;
 elCon = meshStruct.elCon;
 nCoords = meshStruct.nCoords;
 
-% Plot the contour distribution
-if strcmp(PlotInstructions.plot_contour,'yes')
-    patchPlot(d, meshStruct,'\phi field',15);
-end
+% % Plot the contour distribution
+% if strcmp(PlotInstructions.plot_contour,'yes')
+%     patchPlot(d, meshStruct,'\phi field',15);
+% end
 
 % Calculate gradient
 gradient = calNodalGradient(d,meshStruct);
 
-% Plot Gradient
-if strcmp(PlotInstructions.plot_vector,'yes')
-    plotvector(gradient,meshStruct.nCoords,'FE solution: \nabla\phi',1);
-end
+% % Plot Gradient
+% if strcmp(PlotInstructions.plot_vector,'yes')
+%     plotvector(gradient,meshStruct.nCoords,'FE solution: \nabla\phi',1);
+% end
 
 % Get stresses
 sigma_13 = gradient(:,2);
@@ -29,8 +29,16 @@ sigma_23 = -gradient(:,1);
 
 % Plot Traction Vector
 if strcmp(PlotInstructions.plot_vector,'yes')
-    plotvector([sigma_13,sigma_23],meshStruct.nCoords,'FE solution: Traction Vectors',1);
+    plotvector([sigma_13,sigma_23],meshStruct.nCoords,'FE solution: Stress Vectors',1);
 end
+% Plot the contour distribution
+if strcmp(PlotInstructions.plot_contour,'yes')
+    patchPlot(sigma_13, meshStruct,'\sigma_{13} field',15);
+end% Plot the contour distribution
+if strcmp(PlotInstructions.plot_contour,'yes')
+    patchPlot(sigma_23, meshStruct,'\sigma_{23} field',15);
+end
+
 
 % Calc von Mises effective stress
 von_Mises = sqrt(sigma_13.^2 + sigma_23.^2);
@@ -77,4 +85,4 @@ switch nnpe
 end
 
 
-disp(tot_torque);
+fprintf('Total Torque: %.3f\n', tot_torque);
