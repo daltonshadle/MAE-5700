@@ -20,7 +20,10 @@ function value = FF ( x )
 
 % value = 0;
 
-% value=100*(x(1)*x(2));
+% For Torsion
 G = 77.2e+9; % N/m^2
 alpha = 0.3;
 value = 2 * G * alpha;
+
+% For Heat Transfer
+value=0;

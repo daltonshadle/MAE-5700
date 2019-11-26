@@ -12,9 +12,10 @@ function [boundStruct]=InputData(boundStruct)
 %                                    % have a fixed value of 20.
 
 % boundStruct.SurfEssV = [3 100 ; 1 0 ; 2 0]; % this is for the example of plate with a hole 
-boundStruct.SurfEssV = [1 0]; % this is for torsion of quarter circle shaft
+% boundStruct.SurfEssV = [1 0]; % this is for torsion of quarter circle shaft
 
 % boundStruct.SurfEssV = [1 0; 2 0; 3 0; 4 0]; % for rectangle
+boundStruct.SurfEssV = [];  % for Heat Transfer
 
 % The natural boundary condition is expressed as
 % k*(gradu) . n = alpha * u + beta
@@ -28,11 +29,15 @@ boundStruct.SurfEssV = [1 0]; % this is for torsion of quarter circle shaft
                                  % k is defined in the function DD.m, and
                                  % can generally depend on positions.
 % boundStruct.SurfNat = [4 0 0; 5 0 0]; % this is for the example of plate with a hole 
-boundStruct.SurfNat = [2 0 0; 3 0 0]; % this is for torsion of quarter circle shaft
+% boundStruct.SurfNat = [2 0 0; 3 0 0]; % this is for torsion of quarter circle shaft
 % boundStruct.SurfNat = []; % for rectangle
 
 
 % point source boundary condition for heat convection
 % in the for [heat source, x-coord, y-coord]
 % boundStruct.PointSource = [250 0 5e-2];
+
+boundStruct.SurfNat = [1 0 0; 2 0 0; 3 -5 0; 4 0 0]; % for Heat Transfer
+boundStruct.PointSource = [0 5 125]; % [x-coord, y-coord, heat source value]
+
 

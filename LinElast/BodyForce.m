@@ -6,24 +6,17 @@
 % written permission)                                                     |
 %                                                                         |
 % Authors: N. Zabaras (zabaras@cornell.edu) & Xiang Ma (xm25@cornell.edu) |
-%                                                                         |
+% Last update: 1 May 2015 H. Ritz                                         |                                  |
 % ------------------------------------------------------------------------|
 %
-function D = DD(XY)
 
-% Sets up the `conductivity' matrix (2x2 for 2D) 
-% at point XY=(x(1),x(2)).
+function value = BodyForce ( x )
+
+% It returns the body force vector at every location.
 %
-% This is problem specific (constitutive) information relating 
-% the flux and the gradient of the main field variable.
+% This is problem specific. 
 
-% D = 5*[1  0;
-%      0  1];
+% mua=1e7; % mass per unit area
+% value = [0;-9.81*mua]; % use this for gravity in the -y direction
 
-% For Torsion
-D = [1 0;
-     0 1;];
-
-% For Heat Transfer
-D = [15  0;
-     0  15];
+value=[0;0]; % use this for no body force

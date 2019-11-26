@@ -50,4 +50,15 @@ boundStruct.ebcVals = ebcVals;
 clear tdebc tebcVals;
 
 
+% Apply point source
+PointSource = boundStruct.PointSource;
+nCoords = meshStruct.nCoords;
 
+% Iterate over each point source 
+for i = 1:size( boundStruct.PointSource,1)
+   curr_PS =  boundStruct.PointSource(i,:);
+   
+   nodeNum_PS = find(meshStruct.nCoords(:,1) == curr_PS(1) & meshStruct.nCoords(:,2) == curr_PS(2));
+   
+   globalSystem.F(nodeNum_PS) = globalSystem.F(nodeNum_PS) + curr_PS(3);
+end
