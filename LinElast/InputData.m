@@ -16,8 +16,12 @@ boundStruct.SurfEssV = [5 1 0
                                 % degree of freedom #2 (y direction), has a value of 20.
 
 % Essential BC's for HW12 Problem 1
-boundStruct.SurfEssV = [2 1 0;
-                        1 2 0];
+% boundStruct.SurfEssV = [2 1 0;
+%                         1 2 0];
+                    
+% Essential BC's for HW12 Problem 2
+boundStruct.SurfEssV = [4 1 0;
+                        4 2 0];
                                 
 % Define the natural BCs
 % The natural boundary condition is defined in tangential and normal
@@ -28,9 +32,14 @@ boundStruct.SurfNat = [3 0 -1e7]; % e.g. [3 10 -10] means surface # 3 has
                                  % 10 and normal traction (pointing in) 10.
 
 % Natural BC's for HW12 Problem 1                       
-boundStruct.SurfNat = [3 0 50e6;
-                       4 0 0;
-                       5 0 0];
+% boundStruct.SurfNat = [3 0 50e6;
+%                        4 0 0;
+%                        5 0 0];
+                   
+% Natural BC's for HW12 Problem 2                     
+boundStruct.SurfNat = [2 -5e5 0;
+                       1 0 0;
+                       3 0 0];
 
 % Define material properties
 E          =2e11; % Young's Modulus

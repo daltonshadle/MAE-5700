@@ -84,3 +84,5 @@ tic
 PostProcessor(PlotInstructions,meshStruct,globalSystem);
 toc
 disp(sprintf('\b   (Postprocessing)')) % output time for post-processing
+
+Uy_HW12_P2();
