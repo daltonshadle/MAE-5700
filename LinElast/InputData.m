@@ -13,8 +13,12 @@ function [meshStruct,boundStruct]=InputData(meshStruct,boundStruct)
 % boundStruct.SurfEssV = [];
 boundStruct.SurfEssV = [5 1 0
                         4 2 0]; % e.g. [4 2 20] means all nodes on surface # 4,
-%                                % degree of freedom #2 (y direction), has a value of 20.
+                                % degree of freedom #2 (y direction), has a value of 20.
 
+% Essential BC's for HW12 Problem 1
+boundStruct.SurfEssV = [2 1 0;
+                        1 2 0];
+                                
 % Define the natural BCs
 % The natural boundary condition is defined in tangential and normal
 % direction (rather than global x and y direction),outer normal is
@@ -22,6 +26,12 @@ boundStruct.SurfEssV = [5 1 0
 boundStruct.SurfNat = [3 0 -1e7]; % e.g. [3 10 -10] means surface # 3 has 
                                  % a constantly distributed tangential traction
                                  % 10 and normal traction (pointing in) 10.
+
+% Natural BC's for HW12 Problem 1                       
+boundStruct.SurfNat = [3 0 50e6;
+                       4 0 0;
+                       5 0 0];
+
 % Define material properties
 E          =2e11; % Young's Modulus
 nu         =0.35; % Poisson's Ratio

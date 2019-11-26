@@ -11,7 +11,7 @@ function [meshStruct,boundStruct,PlotInstructions]=MeshGeometry(nx,ny,nnpe)
 % "1" for mesh directly generated from Matlab "BoxGrid_2D" function
 % "2" for mesh generated from Ansys and loaded from "loadFromGridFile"
 % function
-LoadChoice = 2;
+LoadChoice = 1;
 
 % Plot instruction
 PlotInstructions.plot_mesh     = 'no';  % What to plot. For big meshes, 
@@ -22,7 +22,7 @@ PlotInstructions.plot_vector   = 'yes';
 PlotInstructions.plot_deformed = 'yes';
 PlotInstructions.plot_fringes  = 'yes';
 
-nnpe = 3;           % number of nodes per element.
+nnpe = 4;           % number of nodes per element.
                     % currently T3 and Q4 elements are supported
 
 nsd = 2;            % number of spatial dimensions 
@@ -30,15 +30,18 @@ if LoadChoice==1 % use LoadChoice =1 only when the geometry is a rectangular
     % Set this information for each problem
 
     xl = 0.0;           % left location of the range in the x direction
-    xr = 1.0;           % right location of the range in the x direction
+    xr = 0.15;           % right location of the range in the x direction
     yb = 0.0;           % bottom location of the range in the y direction
-    yt = 1.0;           % top location of the range in the y direction
+    yt = 0.5;           % top location of the range in the y direction
 
-    nx = 3;            % number of elements in x direction
-    ny = 3;            % number of elements in y direction
+    nx = 41;            % number of elements in x direction
+    ny = 41;            % number of elements in y direction
 
     % Use the provided box grid generator
-    [nCoords,elCon,boundStruct]=BoxGrid_2D(nsd,xl,xr,yb,yt,nnpe,nx,ny); 
+    [nCoords,elCon,boundStruct]=BoxGrid_2D(nsd,xl,xr,yb,yt,nnpe,nx,ny);
+    
+    % Mesh Generator for HW12 Problem 1 (NOTE: nx moust be odd)
+    % [nCoords,elCon,boundStruct]=BoxGrid_2D_P1(nsd,xl,xr,yb,yt,nnpe,nx,ny);
 elseif LoadChoice==2
     [nCoords,elCon,boundStruct]=loadFromGridFile('ansys');
 else
