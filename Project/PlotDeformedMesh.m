@@ -9,50 +9,66 @@
 %                                                                         |
 % ------------------------------------------------------------------------|
 %
- function PlotDeformedMesh(string_title,MeshStruct,d)
+ function PlotDeformedMesh(string_title,meshStruct,d)
+neq=meshStruct.numEq;
+nCoords = meshStruct.nCoords;
+elCon = meshStruct.elCon;
+thickness_layer = meshStruct.thickness_layer;
+%% capturing elemental displacements and angular strains
 
-nno=MeshStruct.numNodes;
-nsd=MeshStruct.nsd;
-Nodes=MeshStruct.nCoords';
-Elems=MeshStruct.elCon';
-nel=MeshStruct.numEls;
-% After computing the displacements, we plot
-% the given mesh in its initial and deformed shapes. 
+u_z = d(1:3:neq-2);
+theta_x = d(2:3:neq-1);
+theta_y = d(3:3:neq);
+%% gca properties
 
-displacements=[reshape(d,nsd,[])]';
+set(0,'defaultLineLineWidth',1.5)
+set(0,'defaultTextFontSize',12)
+set(0,'defaultAxesFontSize',12)
+set(0,'defaultAxesFontWeight','bold')
 
-    a = zeros(nsd);     % Find the scale factor for deformation shape
-    for i=1:nsd
-        a(i) = max(Nodes(i,:)) - min(Nodes(i,:));
+nel = size(elCon,1) ;              % number of elements
+nnode = size(nCoords,1) ;          % total number of nodes in system
+nnpe = size(elCon,2);              % number of nodes per element
+
+% Initialization of the required matrices
+X = zeros(nnpe,nel) ;
+Y = zeros(nnpe,nel) ;
+Z = zeros(nnpe,nel) ;
+profile = zeros(nnpe,nel) ;
+
+% top layer % undeformed
+for iel=1:nel % loop over elements
+    for i=1:nnpe % number of nodes per element
+        nd(i)=elCon(iel,i);         % extract connected node for (iel)-th element
+        X(i,iel)=nCoords(nd(i),1);    % extract x value of the node
+        Y(i,iel)=nCoords(nd(i),2);    % extract y value of the node
     end
-    aa = max(a);
-    b = zeros(nsd);
-    scale = 0;
+    Z(:,iel) = thickness_layer(end)*ones(4,1);
+    profile(:,iel) = 0;
+end
 
-    for i=1:nsd
-        b(i) = max(displacements(:,i)) - min(displacements(:,i));
+% top layer % deformed
+for iel=1:nel % loop over elements
+    for i=1:nnpe % number of nodes per element
+        nd(i)=elCon(iel,i);         % extract connected node for (iel)-th element
+        X_def(i,iel)= -thickness_layer(end)*theta_x(nd(i))+ nCoords(nd(i),1);    % extract x value of the node
+        Y_def(i,iel)= -thickness_layer(end)*theta_x(nd(i))+ nCoords(nd(i),2);    % extract y value of the node
     end
-    bb = max(b);
-    scale = 0.1 * aa / bb;
+    Z_def(:,iel) = u_z(nd)' + thickness_layer(end)*ones(4,1);
+    profile_def(:,iel) = u_z(nd');
+end
 
-    figure;
-    hold on;
 
-    for i= 1:nel
-
-        glb = Elems(:,i)';
-        XX = [Nodes(1, glb),Nodes(1,glb(1))];
-        YY = [Nodes(2, glb),Nodes(2,glb(1))];
-        plot(XX,YY,'b');hold on;
-
-        displacedXX = Nodes(1, glb) + scale* displacements(glb,1)';
-        displacedYY = Nodes(2, glb) + scale* displacements(glb,2)';
-        displacedXX = [displacedXX, displacedXX(1)];
-        displacedYY = [displacedYY, displacedYY(1)];
-        plot (displacedXX,displacedYY,'LineStyle','--','Color','r');
-
-    end
-
-    legend('Initial shape','Deformed shape'); axis image;
-    title(string_title); xlabel('x'); ylabel('y');
+% Plotting the profile of a property on the deformed mesh
+fh = figure ;
+subplot(2,1,1)
+fill3(X,Y,Z,profile)
+zlim([thickness_layer(1) thickness_layer(end)])
+title('Undeformed configuration')
+subplot(2,1,2)
+set(fh,'name','Postprocessing','numbertitle','off') ;
+fill3(X_def,Y_def,Z_def,profile_def)
+title(string_title)
+% Colorbar Setting
+SetColorbar
 

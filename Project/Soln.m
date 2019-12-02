@@ -19,7 +19,7 @@ freeDOF=setdiff(1:numEq,essDOF); % this returns the indices to the DOF that
 K_E	= K(essDOF,essDOF);      % Extract K_E matrix 
 K_F	= K(freeDOF,freeDOF);    % Extract K_F matrix 
 K_EF= K(essDOF,freeDOF);     % Extract K_EF matrix
-f_F = F(freeDOF);            % Extract f_F vector
+f_F = F(freeDOF);           % Extract f_F vector
 d_E = ebcVals;               % Extract d_E vector
  
 % solve for d_F

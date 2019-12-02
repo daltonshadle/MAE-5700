@@ -16,7 +16,7 @@ function value = BodyForce ( x )
 %
 % This is problem specific. 
 
-% mua=1e7; % mass per unit area
+ mua=1e7; % mass per unit area
 % value = [0;-9.81*mua]; % use this for gravity in the -y direction
 
-value=[0;0]; % use this for no body force
+value=[-9.81*mua; 0; 0]; % use this for no body force

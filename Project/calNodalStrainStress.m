@@ -1,8 +1,8 @@
-function [strain, stress] = calNodalStrainStress(glU,meshStruct)
+function [strain, stress] = calNodalStrainStress(glU,meshStruct,layer_position)
 %nodalGradient = calNodalGradient(glField,meshStruct)   Calculate nodal
 %stress and strain
 %
-% Input 
+% Input
 % glU    : column or row vector, the global nodal displacement;
 % meshStruct : structure containing FE mesh info, see LinElast.m for
 % detailed spec.
@@ -21,7 +21,7 @@ function [strain, stress] = calNodalStrainStress(glU,meshStruct)
 % applied in both scalar field (2DBVP) and vector field (Linear elastic)
 % problems.
 % The idea of the extrapolation is global least square. In the end, we form
-% M*u=R, where M is the global mass matrix M = integral(N'*N) and 
+% M*u=R, where M is the global mass matrix M = integral(N'*N) and
 % R = integral(N'*filed_gp). u is the nodal gradient values. See lecture
 % notes for more info.
 
@@ -39,40 +39,57 @@ nCoords=meshStruct.nCoords;
 elCon=meshStruct.elCon;
 gatherMat=meshStruct.gatherMat;
 D=meshStruct.Material.D;
+thickness = meshStruct.thickness;
+thickness_layer = meshStruct.thickness_layer;
 
-% Initialization
-R = zeros(numNodes,6);  % right hand side (3 stress components + 3 strain components)
-M = spalloc(numNodes,numNodes,10*numNodes);  % allocate sparse matrix, last input
-                                             % is the estimation of
-                                             % nonzero numbers of M
+% % Initialization
+% R = zeros(numNodes,6);  % right hand side (3 stress components + 3 strain components)
+% M = spalloc(numNodes,numNodes,10*numNodes);  % allocate sparse matrix, last input
+%                                              % is the estimation of
+%                                              % nonzero numbers of M
 [qp,w] = Gauss(nnpe);
 for e = 1:numEls
-    % Elemental initialization
-    Me = zeros(nnpe);        
-    Re = zeros(nnpe,6);
+    %     % Elemental initialization
+    %     Me = zeros(nnpe*3,1);
+    %     Re = zeros(nnpe*3,6);
+    % get nodal coordinates for this element
+    xvec=nCoords(elCon(e,:),1); % these are column vectors of the
+    yvec=nCoords(elCon(e,:),2); % physical coordinates of the
+    % nodes of this element
     
-    xynode = nCoords(elCon(e,:),:); % nodal coordinate
-    lcU = glU(gatherMat(e,:)); % local displacement
+    x_elemlength =  abs(xvec(2) - xvec(1))/2;
+    y_elemlength =  abs(yvec(3) - yvec(2))/2;
+    x_elem_center = mean(xvec);
+    y_elem_center = mean(yvec);
+    glb_nodes = gatherMat(e,:); % local displacement
+    
+    u_z = d(glb_nodes*3-2);
+    theta_x = d(glb_nodes*3-1);
+    theta_y = d(glb_nodes*3);
+    lcU = [];
+    for jj = 1:1:nnpe
+        lcU = [lcU; d(glb_nodes(jj)*3-2);d(glb_nodes(jj)*3-1);d(glb_nodes(jj)*3)];
+    end
     for iqp = 1:length(w)
-        NofXiEta=Nmatrix(qp(iqp,:),nnpe); % row vector of shape functions
-                                          % at this QP in parent domain
-        dNdXiEta=dNmatrix(qp(iqp,:),nnpe);% 2xnnpe array of shape func derivs
-                                      % at this QP in parent domain
-        JofXiEta=dNdXiEta*xynode;    % jacobian at this QP (2x2 matrix)
-        dNdXY=JofXiEta\dNdXiEta;     % 2xnnpe array of dNdX at ths QP
-     
-        % Here we no longer need the N matrix as in TwoDElem.m
-        B=[];
-        for np=1:nnpe         
-            B=[B,[dNdXY(1,np), 0; 0, dNdXY(2,np); dNdXY(2,np), dNdXY(1,np)]];
-        end
-        % elemental strain and stress
-        lcStrain = B * lcU;
-        lcStress = D * lcStrain;
+        NofXiEta=Nmatrix(qp(iqp,:));  % 1x12 matrix,  row vector of shape functions
+        % at this QP in parent domain
+        dNdXiEta=dNmatrix(qp(iqp,:)); % 2x12 matrix, of first derivs of shape func
+        % at this QP in parent domain
+        ddNdXiEta=ddNmatrix(qp(iqp,:)); % 3x12 matrix, of second derivs of shape func
+        % at this QP in parent domain
         
-        Me = Me + NofXiEta'*NofXiEta * w(iqp)*det(JofXiEta);
-        Re = Re + NofXiEta'* [lcStrain',lcStress'] * w(iqp)*det(JofXiEta);
-
+        JofXiEta= [x_elemlength, 0; 0, y_elemlength]; % jacobian at this QP (2x2 matrix)
+        
+        XY= [x_elemlength*qp(iqp,1)+x_elem_center, y_elemlength*qp(iqp,2)+y_elem_center];   % physical coordinate of this QP (1x2)
+        
+        % now create the N and B matrices
+        
+        N = [NofXiEta; (1/x_elemlength)*dNdXiEta(1,:); (1/y_elemlength)*dNdXiEta(2,:)];
+        
+        B =  [(1/x_elemlength)^2*ddNdXiEta(1,:); (1/y_elemlength)^2*ddNdXiEta(2,:); (2/x_elemlength)*(1/y_elemlength)*ddNdXiEta(3,:)];
+        % elemental strain and stress
+        lcStrain = -thickness_layer(layer_position)*B*lcU;
+        lcStress = (D*12/(thickness)^3)* lcStrain;
     end
     
     % Assembly: we can do the same thing as in Assembly.m, but here we

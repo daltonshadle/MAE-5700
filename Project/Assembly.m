@@ -18,7 +18,8 @@ F=zeros(numEq,1);
 
 
 % get the appropriate quadrature locations and weights
-[qp,w] = Gauss(nnpe);
+[qp,w] = Gauss(nnpe);  % quadrature points
+
 for e=1:numEls
     [ke,fe] = TwoDElem(MeshStruct, e, qp, w); % make the local stiffness matrix and 
                                               % local force vector for this element
