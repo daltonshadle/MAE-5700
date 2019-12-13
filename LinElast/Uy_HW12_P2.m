@@ -23,20 +23,19 @@ Uy_L_nodes = Uy_d(L_nodes);
 Uy_L = mean(Uy_L_nodes);
 
 % print results
-fprintf('U_y displacement at x=L: %0.6f\n', Uy_L);
-
-fprintf('Max d: %0.6f\n', min(Uy_d));
+fprintf('U_y displacement at x=L: %0.8f\n', Uy_L*1000);
 
 % exact solution
 E = 200e+9; % Pa
 P_b = 50e+3; % kN/m
-a = 0.1; % m
+a = 0.01; % m
 L = 1; % m
 
 % Note: I = ba^3/12
+% Solving: u_y = P*L^3/(3*E*I)
 exact_sol = - (P_b * L^3 * 12) / (3 * E * a^3);
-fprintf('Exact Solution: %0.6f\n', exact_sol);
+fprintf('Exact Solution: %0.8f\n', exact_sol*1000);
 
-% Error calculations
+% L2_Error calculations
 L2_error = sqrt((Uy_L - exact_sol)^2) / sqrt(exact_sol^2);
 fprintf('Error: %0.6f\n', L2_error);

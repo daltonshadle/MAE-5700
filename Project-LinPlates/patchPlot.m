@@ -1,4 +1,4 @@
-function patchPlot(fieldValue, meshStruct, plotTitle,varargin)
+function patchPlot(fieldValue, meshStruct, plotTitle, filename, varargin)
 %patchPlot(fieldValue, meshStruct, plotTitle,[nColor])        contour plot
 % 
 % Input
@@ -35,7 +35,12 @@ yElm = yCoords(elCon)';
 fieldElm = fieldValue(elCon)';
 
 % plotting
-figure;
+gcf = figure;
+x0=10;
+y0=10;
+width=800;
+height=700;
+set(gcf,'position',[x0,y0,width,height])
 patch(xElm,yElm,fieldElm,'EdgeColor','interp');
 
 colormap(jet(nColor));
@@ -48,9 +53,11 @@ else
     nTick = 16;
 end
 hColorbar.Ticks = linspace(min(fieldValue),max(fieldValue),nTick);
-ylabel(hColorbar, 'Stress (Pa)')
-xlabel('x (m)');
-ylabel('y (m)');
+xlabel('x');
+ylabel('y');
 
 title(plotTitle);
 axis image
+
+saveas(gcf,filename,'epsc')
+saveas(gcf,filename,'png')

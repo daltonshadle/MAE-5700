@@ -1,8 +1,8 @@
-function [strain, stress] = calNodalStrainStress(glU,meshStruct)
+function [strain, stress, moment] = GPNodalStrainStress(glU,meshStruct,layer_position)
 %nodalGradient = calNodalGradient(glField,meshStruct)   Calculate nodal
 %stress and strain
 %
-% Input 
+% Input
 % glU    : column or row vector, the global nodal displacement;
 % meshStruct : structure containing FE mesh info, see LinElast.m for
 % detailed spec.
@@ -21,11 +21,9 @@ function [strain, stress] = calNodalStrainStress(glU,meshStruct)
 % applied in both scalar field (2DBVP) and vector field (Linear elastic)
 % problems.
 % The idea of the extrapolation is global least square. In the end, we form
-% M*u=R, where M is the global mass matrix M = integral(N'*N) and 
+% M*u=R, where M is the global mass matrix M = integral(N'*N) and
 % R = integral(N'*filed_gp). u is the nodal gradient values. See lecture
 % notes for more info.
-
-% last edit: Nov 18 2015 Y. Xu
 
 if isrow(glU)
     glU = glU'; % to column vector
@@ -39,39 +37,48 @@ nCoords=meshStruct.nCoords;
 elCon=meshStruct.elCon;
 gatherMat=meshStruct.gatherMat;
 D=meshStruct.Material.D;
+thickness=meshStruct.thickness
 
 % Initialization
-R = zeros(numNodes,6);  % right hand side (3 stress components + 3 strain components)
-M = spalloc(numNodes,numNodes,10*numNodes);  % allocate sparse matrix, last input
-                                             % is the estimation of
-                                             % nonzero numbers of M
+R = sparse(numNodes,9);  % right hand side (3 stress components + 3 strain components + 3 moments)
+M = sparse(numNodes,numNodes);  
+
 [qp,w] = Gauss(nnpe);
 for e = 1:numEls
     % Elemental initialization
     Me = zeros(nnpe);        
-    Re = zeros(nnpe,6);
+    Re = zeros(nnpe,9);
     
-    xynode = nCoords(elCon(e,:),:); % nodal coordinate
+    % get nodal coordinates for this element
+    xvec=nCoords(elCon(e,:),1); % these are column vectors of the
+    yvec=nCoords(elCon(e,:),2); % physical coordinates of the
+                                    % nodes of this element
+
+    x_elemlength =  abs(xvec(2) - xvec(1))/2;                           
+    y_elemlength =  abs(yvec(3) - yvec(2))/2;         
+    
+    
     lcU = glU(gatherMat(e,:)); % local displacement
     for iqp = 1:length(w)
-        NofXiEta=Nmatrix(qp(iqp,:),nnpe); % row vector of shape functions
-                                          % at this QP in parent domain
-        dNdXiEta=dNmatrix(qp(iqp,:),nnpe);% 2xnnpe array of shape func derivs
-                                      % at this QP in parent domain
-        JofXiEta=dNdXiEta*xynode;    % jacobian at this QP (2x2 matrix)
-        dNdXY=JofXiEta\dNdXiEta;     % 2xnnpe array of dNdX at ths QP
-     
-        % Here we no longer need the N matrix as in TwoDElem.m
-        B=[];
-        for np=1:nnpe         
-            B=[B,[dNdXY(1,np), 0; 0, dNdXY(2,np); dNdXY(2,np), dNdXY(1,np)]];
-        end
+        % Calcluate N, dN, ddN matrices
+        NofXiEta=StrainStressInterp(qp(iqp,:));    % 1x4 interpolation matrix
+        ddNdXiEta=ddNmatrix(qp(iqp,:)); % 3x12 matrix, of second derivs of shape func
+                                        % at this QP in parent domain
+        
+        % jacobian at this QP (2x2 matrix)
+        JofXiEta= [x_elemlength, 0; 0, y_elemlength];
+        
+        % now create the B matrix
+        B =  [(1/x_elemlength)^2*ddNdXiEta(1,:); (1/y_elemlength)^2*ddNdXiEta(2,:); ...
+            (2/x_elemlength)*(1/y_elemlength)*ddNdXiEta(3,:)];
+        
         % elemental strain and stress
-        lcStrain = B * lcU;
+        lcStrain = - layer_position * B * lcU;
         lcStress = D * lcStrain;
+        lcMoment = - D * thickness^3 * B * lcU / 12;
         
         Me = Me + NofXiEta'*NofXiEta * w(iqp)*det(JofXiEta);
-        Re = Re + NofXiEta'* [lcStrain',lcStress'] * w(iqp)*det(JofXiEta);
+        Re = Re + NofXiEta'* [lcStrain',lcStress',lcMoment'] * w(iqp)*det(JofXiEta);
 
     end
     
@@ -87,8 +94,20 @@ end
 
 strain = M\R(:,1:3);
 stress = M\R(:,4:6);
+moment = M\R(:,7:9);
+end
 
-disp(size(strain))
+function N=StrainStressInterp(LocPos)
+% N=Nmatrix(QP)
+% This returns the matrix of shape functions N calculated at the local
+% coordinates XI,ETA for 2D elements.
+% last edit: 29 April 2015 H. Ritz
 
+xi=LocPos(1); eta=LocPos(2);
+N = 1/4*[(1 - xi).*(1-eta),(1+xi).*(1-eta),...
+          (1+xi).*(1+eta), (1-xi).*(1+eta)];  % Calculate the 4 basis functions 
+                                              % at (xi,eta). N is a row
+                                              % vector
+end
 
 

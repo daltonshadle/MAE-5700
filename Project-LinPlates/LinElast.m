@@ -52,37 +52,50 @@
 
 % last update: 15 Nov 2015 H. Ritz; Y. Xu
 
-% preliminary necessities
-home; clear; close all; 
-tic % start a timer, just for fun
+%%  Clearing windows and variables
+clc; clear variables; close all; 
 
-% set up the mesh and define the boundaries
+%% set up the mesh and define the boundaries
 [meshStruct,boundStruct,PlotInstructions]=MeshGeometry;
 
-% choose plotting options and define BC type and material properties
+%% Preprocessing
+tic
 [meshStruct,boundStruct]=InputData(meshStruct,boundStruct);
 toc
-disp(sprintf('\b   (Preprocessing)')) % output the time for meshing
-tic
-globalSystem = Assembly(meshStruct);% Loop over all the elements and 
-                                  % assemble the global sparse format of the 
-                                  % "stiffness" matrix and "force" vector                
-toc
-disp(sprintf('\b   (Assembly)')) % output the time for assembly
-tic
+fprintf('\b   (Preprocessing)\n') % output the time for meshing
 
+%% Assembly
+tic
+% Loop over all the elements and assemble the global sparse format of the 
+% "stiffness" matrix and "force" vector
+globalSystem = Assembly(meshStruct);                
+toc
+fprintf('\b   (Assembly)\n') % output the time for assembly
+
+%% Boundary conditions
+tic
 % Apply different boundary conditions 
 [globalSystem,boundStruct] = ApplyBC(boundStruct,meshStruct,globalSystem); 
+toc
+fprintf('\b   (ApplyBC)\n') % output the time for assembly
 
-% Solve the global system
+%% Solution: Solve the global system
+tic
 globalSystem = Soln(globalSystem,boundStruct);
 toc
-disp(sprintf('\b   (Solution)')) % output the time for the solution
-tic
+fprintf('\b   (Solution)\n') % output the time for the solution
 
-% Post-process for plots, flux, etc.
+%% Post-process for strains, stresses and moments
+tic
 globalSystem = PostProcessor(PlotInstructions,meshStruct,globalSystem);
 toc
-disp(sprintf('\b   (Postprocessing)')) % output time for post-processing
+fprintf('\b   (Postprocessing)\n') % output time for post-processing
 
-Uy_HW12_P2();
+disp(max(globalSystem.stress));
+
+% simply supported
+exact_u_z = (0.142 * 1e6)/(2e11 * 0.02^3 * 3.21);
+exact_s_max = (0.75 * 1e6)/(0.02^2 * 2.61);
+
+disp(exact_u_z);
+disp(exact_s_max);

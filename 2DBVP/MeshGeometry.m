@@ -24,13 +24,13 @@ nnpe = 4;           % number of nodes per element.
 nsd = 2;            % number of spatial dimensions 
 if LoadChoice==1 % use LoadChoice =1 only when the geometry is rectangular
     % Set this information for each problem
-    xl = 0.0;           % left location of the range in the x direction
+    xl = 1.0;           % left location of the range in the x direction
     xr = 2.0;           % right location of the range in the x direction
     yb = 0.0;           % bottom location of the range in the y direction
-    yt = 10.0;           % top location of the range in the y direction
+    yt = 1.0;           % top location of the range in the y direction
 
-    nx = 10;            % number of elements in x direction
-    ny = 10;            % number of elements in y direction
+    nx = 3;            % number of elements in x direction
+    ny = 3;            % number of elements in y direction
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

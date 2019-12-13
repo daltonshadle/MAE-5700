@@ -2,7 +2,7 @@
 % Calculate stress, make contour plots, vector field plots, deformed mesh, etc.
 %
 % last update: 22 November 2017 H. Ritz
-function PostProcessor(PlotInstructions,meshStruct,globalSystem)
+function [globalSystem] = PostProcessor(PlotInstructions,meshStruct,globalSystem)
 d = globalSystem.d;
 neq=meshStruct.numEq;
 u = d(1:2:neq-1);
@@ -18,10 +18,10 @@ if strcmp(PlotInstructions.plot_deformed,'yes')
     PlotDeformedMesh('Deformed Configuration',meshStruct,d);
 end
 % Plot the contour distribution
-if strcmp(PlotInstructions.plot_contour,'yes')
-    patchPlot(u,meshStruct, 'FE solution: u displacement ');
-    patchPlot(v,meshStruct, 'FE solution: v displacement ');
-end
+% if strcmp(PlotInstructions.plot_contour,'yes')
+%     patchPlot(u,meshStruct, 'FE solution: u displacement ');
+%     patchPlot(v,meshStruct, 'FE solution: v displacement ');
+% end
 
 % Calculate the strain and stress
 [~,sig] = calNodalStrainStress(d,meshStruct);
@@ -39,12 +39,15 @@ sigma_vm=sqrt(sigma_xx.^2+sigma_yy.^2-sigma_xx.*sigma_yy+3*sigma_xy.^2);
 % Plot stresses
 if strcmp(PlotInstructions.plot_contour,'yes')
 
-    patchPlot(sigma_xx,meshStruct, 'xx stress ');
-    patchPlot(sigma_yy,meshStruct, 'yy stress ');
-    patchPlot(sigma_xy,meshStruct, 'xy stress ');
+    patchPlot(sigma_xx,meshStruct, '\sigma_{xx}');
+    patchPlot(sigma_yy,meshStruct, '\sigma_{yy}');
+    patchPlot(sigma_xy,meshStruct, '\sigma_{xy}');
     patchPlot(sigma_vm,meshStruct, 'von Mises stress ');
 end
 
 if strcmp(PlotInstructions.plot_fringes,'yes')
     PlotFringes(2*tau_max, 10,meshStruct);
 end
+
+globalSystem.sig = sig;
+globalSystem.v = v;

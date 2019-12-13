@@ -53,6 +53,6 @@ displacements=[reshape(d,nsd,[])]';
 
     end
 
-    legend('Initial shape','Deformed shape'); axis image;
-    title(string_title); xlabel('x'); ylabel('y');
+    legend('Initial',['Deformed (Scale=', num2str(fix(scale)),')']); axis image;
+    title(string_title); xlabel('x (m)'); ylabel('y (m)');
 

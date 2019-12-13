@@ -9,7 +9,7 @@
 %                                                                         |
 % ------------------------------------------------------------------------|
 % You should not need to edit this function.
-function [nodalcoords,connectivity,BoundaryStruct]=BoxGrid_2D_P1(nsd, xl, xr, yb, yt, nnpe, nelemx, nelemy );
+function [nodalcoords,connectivity,BoundaryStruct]=BoxGrid_2D(nsd, xl, xr, yb, yt, nnpe, nelemx, nelemy );
 
 %  BoxGrid_2D produces a grid of pairs of 3 node triangles or 4-node
 %  quadrilaterals in the rectangular domain [xl,xr] x [yb,yt].
@@ -103,11 +103,8 @@ end
 
                                         % What global nodes are in each
                                         % boundary segment?
-
-% Code Changes form HW12 Problem 1 ****************************************
-BoundaryNodes(1).Nodes = [1:(nelemx)/3];  % The first boundary (bottom left 1/3)
-BoundaryNodes(5).Nodes = [(nelemx)/3+1:nelemx+1];  % The fifth boundary (bottom right 2/3)
-% Code Changes form HW12 Problem 1 ****************************************
+                                  
+BoundaryNodes(1).Nodes = [1:nelemx+1];  % The first boundary (bottom)
 
                                         % The second boundary (right)
 BoundaryNodes(2).Nodes = [1:(nelemy+1)]*(nelemx+1);
@@ -166,14 +163,9 @@ connectivity=connectivity';
 
 switch nnpe
     case 4
-
-    % Code Changes form HW12 Problem 1 ****************************************
-    BoundaryElems(1).Elems = [1:nelemx/3];  % The first boundary (bottom left 1/3)
-    BoundaryElems(1).SurfaceIndicator = -2*ones(nelemx/3,1);
-    
-    BoundaryElems(5).Elems = [nelemx/3+1:nelemx];  % The fifth boundary (bottom right 2/3)
-    BoundaryElems(5).SurfaceIndicator = -2*ones(2*nelemx/3,1);
-    % Code Changes form HW12 Problem 1 ****************************************
+                                        % The first boundary (bottom)
+    BoundaryElems(1).Elems = [1:nelemx];
+    BoundaryElems(1).SurfaceIndicator = -2*ones(nelemx,1);
 
                                         % The second boundary (right)
     BoundaryElems(2).Elems = [1:nelemy]*nelemx;
