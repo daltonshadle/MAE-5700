@@ -36,50 +36,62 @@ numEls=meshStruct.numEls;
 nCoords=meshStruct.nCoords;
 elCon=meshStruct.elCon;
 gatherMat=meshStruct.gatherMat;
-D=meshStruct.Material.D;
-thickness=meshStruct.thickness
+Db=meshStruct.Material.Db;
+Ds=meshStruct.Material.Ds;
+sc=meshStruct.Material.sc;
+thickness=meshStruct.thickness;
 
 % Initialization
-R = sparse(numNodes,9);  % right hand side (3 stress components + 3 strain components + 3 moments)
-M = sparse(numNodes,numNodes);  
+R = sparse(numNodes,13);  % right hand side (5 stress components + 5 strain components + 3 moments)
+M = sparse(numNodes,numNodes);
 
 [qp,w] = Gauss(nnpe);
 for e = 1:numEls
     % Elemental initialization
-    Me = zeros(nnpe);        
-    Re = zeros(nnpe,9);
+    Me = zeros(nnpe);
+    Re = zeros(nnpe,13);
     
     % get nodal coordinates for this element
     xvec=nCoords(elCon(e,:),1); % these are column vectors of the
     yvec=nCoords(elCon(e,:),2); % physical coordinates of the
-                                    % nodes of this element
-
-    x_elemlength =  abs(xvec(2) - xvec(1))/2;                           
-    y_elemlength =  abs(yvec(3) - yvec(2))/2;         
+    % nodes of this element
+    
     
     
     lcU = glU(gatherMat(e,:)); % local displacement
     for iqp = 1:length(w)
-        % Calcluate N, dN, ddN matrices
-        NofXiEta=StrainStressInterp(qp(iqp,:));    % 1x4 interpolation matrix
-        ddNdXiEta=ddNmatrix(qp(iqp,:)); % 3x12 matrix, of second derivs of shape func
-                                        % at this QP in parent domain
+        % for each quadrature point ...
+        NofXiEta=Nmatrix(qp(iqp,:)); % row vector of shape functions
+        % at this QP in parent domain (1x4)
+        dNdXiEta=dNmatrix(qp(iqp,:));% 2xnnpe array of shape func derivs
+        % at this QP in parent domain (2x4)
+        JofXiEta=dNdXiEta*[xvec,yvec];    % jacobian at this QP (2x2 matrix)
+        dNdXY=inv(JofXiEta)*dNdXiEta;     % 2xnnpe array of dNdX at ths QP
         
-        % jacobian at this QP (2x2 matrix)
-        JofXiEta= [x_elemlength, 0; 0, y_elemlength];
+        XY=NofXiEta*[xvec,yvec]; % physical coordinate of this QP (1x2)
         
-        % now create the B matrix
-        B =  [(1/x_elemlength)^2*ddNdXiEta(1,:); (1/y_elemlength)^2*ddNdXiEta(2,:); ...
-            (2/x_elemlength)*(1/y_elemlength)*ddNdXiEta(3,:)];
+        % now create the N and Bb (bending) and Bs (shear) matrices
+        N=[]; Bb=[]; Bs=[];
+        for np=1:nnpe
+            N=[N,[NofXiEta(np), 0, 0; 0, NofXiEta(np), 0; 0, 0, NofXiEta(np)]];
+            Bb=[Bb,[0, dNdXY(1,np), 0; 0, 0, dNdXY(2,np); 0, dNdXY(2,np), dNdXY(1,np)]];
+            Bs=[Bs,[dNdXY(1,np), -NofXiEta(np), 0; dNdXY(2,np), 0, -NofXiEta(np)]];
+        end
         
         % elemental strain and stress
-        lcStrain = - layer_position * B * lcU;
-        lcStress = D * lcStrain;
-        lcMoment = - D * thickness^3 * B * lcU / 12;
+        lcStrain_b = - layer_position * Bb * lcU;
+        lcStress_b = Db * lcStrain_b;
+        lcMoment = - Db * thickness^3 * Bb * lcU / 12;
+        
+        lcStrain_s = Bs * lcU;
+        lcStress_s = Ds * lcStrain_s;
+        
+        lcStrain = [lcStrain_b; lcStrain_s];
+        lcStress = [lcStress_b; lcStress_s];
         
         Me = Me + NofXiEta'*NofXiEta * w(iqp)*det(JofXiEta);
         Re = Re + NofXiEta'* [lcStrain',lcStress',lcMoment'] * w(iqp)*det(JofXiEta);
-
+        
     end
     
     % Assembly: we can do the same thing as in Assembly.m, but here we
@@ -92,22 +104,9 @@ for e = 1:numEls
     R(glInd,:) = R(glInd,:) + Re;
 end
 
-strain = M\R(:,1:3);
-stress = M\R(:,4:6);
-moment = M\R(:,7:9);
-end
-
-function N=StrainStressInterp(LocPos)
-% N=Nmatrix(QP)
-% This returns the matrix of shape functions N calculated at the local
-% coordinates XI,ETA for 2D elements.
-% last edit: 29 April 2015 H. Ritz
-
-xi=LocPos(1); eta=LocPos(2);
-N = 1/4*[(1 - xi).*(1-eta),(1+xi).*(1-eta),...
-          (1+xi).*(1+eta), (1-xi).*(1+eta)];  % Calculate the 4 basis functions 
-                                              % at (xi,eta). N is a row
-                                              % vector
+strain = M\R(:,1:5);
+stress = M\R(:,6:10);
+moment = M\R(:,11:13);
 end
 
 
